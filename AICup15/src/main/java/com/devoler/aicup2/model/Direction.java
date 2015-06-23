@@ -1,5 +1,8 @@
 package com.devoler.aicup2.model;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 public enum Direction {
@@ -41,6 +44,14 @@ public enum Direction {
 		default:
 			return null;
 		}
+	}
+	
+	public Direction opposite() {
+		return Direction.values()[Direction.values().length - 1 - ordinal()];
+	}
+	
+	public Set<Direction> orthogonal() {
+		return EnumSet.complementOf(EnumSet.of(this, opposite()));
 	}
 
 	public abstract Pair<Integer, Integer> apply(Pair<Integer, Integer> position);
