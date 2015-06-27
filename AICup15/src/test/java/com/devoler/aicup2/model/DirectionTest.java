@@ -7,16 +7,14 @@ import java.util.EnumSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
-import com.devoler.aicup2.model.Direction;
-
 public class DirectionTest {
 	@Test
 	public void testApply() {
 		Pair<Integer, Integer> pos = Pair.of(0, 0);
-		assertEquals(Pair.of(1, 0), Direction.DOWN.apply(pos));
-		assertEquals(Pair.of(-1, 0), Direction.UP.apply(pos));
-		assertEquals(Pair.of(0, -1), Direction.LEFT.apply(pos));
-		assertEquals(Pair.of(0, 1), Direction.RIGHT.apply(pos));
+		assertEquals(Pair.of(0, 1), Direction.DOWN.apply(pos));
+		assertEquals(Pair.of(0, -1), Direction.UP.apply(pos));
+		assertEquals(Pair.of(-1, 0), Direction.LEFT.apply(pos));
+		assertEquals(Pair.of(1, 0), Direction.RIGHT.apply(pos));
 	}
 
 	@Test

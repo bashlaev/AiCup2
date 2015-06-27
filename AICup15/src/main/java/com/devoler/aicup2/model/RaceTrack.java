@@ -1,15 +1,26 @@
 package com.devoler.aicup2.model;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.devoler.aicup2.model.Intersections.Intersection;
+import com.devoler.aicup2.model.Intersections.Segment;
+import com.devoler.aicup2.model.Intersections.Vertex;
+
 public class RaceTrack {
 	private static final int MIN_WIDTH = 0;
 	private static final int MAX_WIDTH = 20;
-
+	
+	private static final Set<TrackCell> START_CELLS = EnumSet.of(
+			TrackCell.START_CELL, TrackCell.START_LINE);
+	
 	/**
 	 * Parses a race track from a formatted string.
 	 * 
@@ -74,16 +85,16 @@ public class RaceTrack {
 
 	private static TrackCell[][] growLayer(TrackCell[][] source) {
 		TrackCell[][] target = new TrackCell[source.length][source[0].length];
-		for (int col = 0; col < source.length; col++) {
-			for (int row = 0; row < source[col].length; row++) {
-				TrackCell cell = source[col][row];
+		for (int x = 0; x < source.length; x++) {
+			for (int y = 0; y < source[x].length; y++) {
+				TrackCell cell = source[x][y];
 				if (cell == TrackCell.TRACK) {
 					// fill in this cell and all of its neighbours
-					target[col][row] = TrackCell.TRACK;
-					target[col - 1][row] = TrackCell.TRACK;
-					target[col + 1][row] = TrackCell.TRACK;
-					target[col][row - 1] = TrackCell.TRACK;
-					target[col][row + 1] = TrackCell.TRACK;
+					target[x][y] = TrackCell.TRACK;
+					target[x - 1][y] = TrackCell.TRACK;
+					target[x + 1][y] = TrackCell.TRACK;
+					target[x][y - 1] = TrackCell.TRACK;
+					target[x][y + 1] = TrackCell.TRACK;
 				}
 			}
 		}
@@ -91,27 +102,27 @@ public class RaceTrack {
 	}
 
 	private static boolean convertToOuterNonTrack(TrackCell[][] source,
-			int row, int col) {
-		if (source[col][row] != null) {
+			int x, int y) {
+		if (source[x][y] != null) {
 			return false;
 		}
-		if (row == 0 || col == 0 || col == source.length - 1
-				|| row == source[0].length - 1) {
+		if (y == 0 || x == 0 || x == source.length - 1
+				|| y == source[0].length - 1) {
 			return true;
 		}
-		return (source[col - 1][row] == TrackCell.NON_TRACK_OUT)
-				|| (source[col + 1][row] == TrackCell.NON_TRACK_OUT)
-				|| (source[col][row - 1] == TrackCell.NON_TRACK_OUT)
-				|| (source[col][row + 1] == TrackCell.NON_TRACK_OUT);
+		return (source[x - 1][y] == TrackCell.NON_TRACK_OUT)
+				|| (source[x + 1][y] == TrackCell.NON_TRACK_OUT)
+				|| (source[x][y - 1] == TrackCell.NON_TRACK_OUT)
+				|| (source[x][y + 1] == TrackCell.NON_TRACK_OUT);
 	}
 
 	private static void fillOuterNonTrack(TrackCell[][] source) {
 		while (true) {
 			int converted = 0;
-			for (int col = 0; col < source.length; col++) {
-				for (int row = 0; row < source[col].length; row++) {
-					if (convertToOuterNonTrack(source, row, col)) {
-						source[col][row] = TrackCell.NON_TRACK_OUT;
+			for (int x = 0; x < source.length; x++) {
+				for (int y = 0; y < source[x].length; y++) {
+					if (convertToOuterNonTrack(source, x, y)) {
+						source[x][y] = TrackCell.NON_TRACK_OUT;
 						converted++;
 					}
 				}
@@ -124,10 +135,10 @@ public class RaceTrack {
 
 	private static int fillInnerNonTrack(TrackCell[][] source) {
 		int counter = 0;
-		for (int col = 0; col < source.length; col++) {
-			for (int row = 0; row < source[col].length; row++) {
-				if (source[col][row] == null) {
-					source[col][row] = TrackCell.NON_TRACK_IN;
+		for (int x = 0; x < source.length; x++) {
+			for (int y = 0; y < source[x].length; y++) {
+				if (source[x][y] == null) {
+					source[x][y] = TrackCell.NON_TRACK_IN;
 					counter++;
 				}
 			}
@@ -135,12 +146,18 @@ public class RaceTrack {
 		return counter;
 	}
 
-	private static boolean isNavigable(TrackCell[][] source, int col, int row) {
-		return row >= 0 && col >= 0 && col < source.length
-				&& row < source[0].length && source[col][row] != null
-				&& source[col][row].isNavigable();
+	private static boolean isNavigable(TrackCell[][] source, int x, int y) {
+		return y >= 0 && x >= 0 && x < source.length
+				&& y < source[0].length && source[x][y] != null
+				&& source[x][y].isNavigable();
 	}
-	
+
+	private static boolean isOfType(TrackCell[][] source, int x, int y, TrackCell type) {
+		return y >= 0 && x >= 0 && x < source.length
+				&& y < source[0].length && source[x][y] != null
+				&& source[x][y] == type;
+	}
+
 	private static void drawOrthogonalLine(TrackCell[][] source, Pair<Integer, Integer> startSpot, Direction direction, int width, TrackCell type) {
 		for (Direction ort : direction.orthogonal()) {
 			Pair<Integer, Integer> pos = startSpot;
@@ -178,13 +195,199 @@ public class RaceTrack {
 		int counter = fillInnerNonTrack(cells);
 		Validate.isTrue(counter > 0, "Race track should have an inner area");
 		fillStartLine(cells, trackAxis.getRight(), axis[0], width);
+		validateStartLine(cells);
 		return cells;
+	}
+	
+	private static void validateStartLine(TrackCell[][] cells) {
+		int startCells = 0;
+		for (int x = 0; x < cells.length; x++) {
+			for (int y = 0; y < cells[x].length; y++) {
+				if (cells[x][y] == TrackCell.START_CELL) {
+					startCells++;
+					// neighbours must not be of type TRACK
+					Validate.isTrue(!isOfType(cells, x - 1, y, TrackCell.TRACK));
+					Validate.isTrue(!isOfType(cells, x + 1, y, TrackCell.TRACK));
+					Validate.isTrue(!isOfType(cells, x, y - 1, TrackCell.TRACK));
+					Validate.isTrue(!isOfType(cells, x, y + 1, TrackCell.TRACK));
+				}
+			}
+		}
+		Validate.isTrue(startCells == 1, "Multiple start spots");
 	}
 
 	private final TrackCell[][] track;
 
 	private RaceTrack(final TrackCell[][] track) {
 		this.track = track;
+	}
+	
+	private Pair<Integer, Integer> getStartCell() {
+		for (int x = 0; x < track.length; x++) {
+			for (int y = 0; y < track[x].length; y++) {
+				if (track[x][y] == TrackCell.START_CELL) {
+					return Pair.of(x, y);
+				}
+			}
+		}
+		throw new IllegalStateException("Start cell not found");
+	}
+	
+	public TrackCell cellAt(int x, int y) {
+		return track[x][y];
+	}
+
+	public TrackCell cellAt(Pair<Integer, Integer> coords) {
+		return cellAt(coords.getLeft(), coords.getRight());
+	}
+	
+	public RaceResult checkSolution(String instructions) {
+		if (instructions == null) {
+			return RaceResult.couldNotParseSolution();
+		}
+		Direction[] directions = new Direction[instructions.length()];
+		try {
+			for (int i = 0; i < directions.length; i++) {
+				directions[i] = Direction.parseChar(instructions.charAt(i));
+			}
+		} catch (Exception exc) {
+			return RaceResult.couldNotParseSolution();
+		}
+		
+		// examine solution step-by-step
+		Pair<Integer, Integer> pos = getStartCell();
+		Pair<Integer, Integer> speed = Pair.of(0, 0);
+		List<Pair<Integer, Integer>> log = new ArrayList<>();
+		int time = 0;
+		log.add(pos);
+		for(Direction move: directions) {
+			speed = move == null ? speed: move.apply(speed);
+			Pair<Integer, Integer> newPos = applySpeed(pos, speed);
+			Pair<Boolean, Intersection> result = applyMove(pos, newPos); 
+			if (result.getLeft()) {
+				log.add(newPos);
+				if (result.getRight() != null) {
+					// need to calculate the last piece of time correctly
+					double prop = calcProportion(pos, newPos, result.getRight());
+					return RaceResult.finish(log, time + prop);
+				}
+				pos = newPos;
+				time++;
+			} else {
+				return RaceResult.illegalMove(log);
+			}
+		}
+
+		return RaceResult.didNotFinish(log);
+	}
+
+	private double calcProportion(Pair<Integer, Integer> from,
+			Pair<Integer, Integer> to, Intersection i) {
+		if (i instanceof Vertex) {
+			return calcProportion(from, to, ((Vertex) i).getCoords());
+		} else if (i instanceof Segment) {
+			Segment segment = (Segment) i;
+			return (calcProportion(from, to, segment.getVertices().getLeft()) + calcProportion(
+					from, to, segment.getVertices().getRight())) / 2;
+		}
+		throw new IllegalArgumentException("Illegal intersection: " + i);
+	}
+
+	private double calcProportion(Pair<Integer, Integer> from, Pair<Integer, Integer> to, Pair<Integer, Integer> pivot) {
+		if (to.equals(pivot)) {
+			return 1.0d;
+		}
+		Point2D fromPoint = new Point2D.Double(from.getLeft(), from.getRight());
+		Point2D toPoint = new Point2D.Double(to.getLeft(), to.getRight());
+		Point2D pivotPoint = new Point2D.Double(pivot.getLeft(), pivot.getRight());
+		double fromPivot = fromPoint.distance(pivotPoint);
+		double toPivot = toPoint.distance(pivotPoint);
+		return fromPivot / (fromPivot + toPivot);
+	}
+	
+	private Pair<Integer, Integer> applySpeed(Pair<Integer, Integer> pos, Pair<Integer, Integer> speed) {
+		return Pair.of(pos.getLeft() + speed.getLeft(), pos.getRight() + speed.getRight());
+	}
+	
+	private boolean isNavigable(Pair<Integer, Integer> coords) {
+		int x = coords.getLeft();
+		int y = coords.getRight();
+		return y >= 0 && x >= 0 && x < track.length
+				&& y < track[0].length && track[x][y] != null
+				&& track[x][y].isNavigable();
+	}
+	
+	private TrackCell typeAt(Pair<Integer, Integer> coords) {
+		int x = coords.getLeft();
+		int y = coords.getRight();
+		if (y >= 0 && x >= 0 && x < track.length
+				&& y < track[0].length) {
+			return track[x][y];
+		}
+		return null;
+	}
+	
+	private Pair<Boolean, Intersection> applyMove(Pair<Integer, Integer> from, Pair<Integer, Integer> to) {
+		List<Intersection> intersections = Intersections.getIntersections(from, to);
+		List<TrackCell> intersectionTypes = new ArrayList<>();
+		Intersection finish = null;
+		for(Intersection i: intersections) {
+			if (!isIntersectionLegal(i)) {
+				return Pair.of(Boolean.FALSE, null);
+			}
+			intersectionTypes.add(cellTypeOfIntersection(i));
+		}
+		// illegal sequences are: anything but pre-start/start/start cell -> start/start cell
+		for(int i = 1; i < intersectionTypes.size(); i++) {
+			if (START_CELLS.contains(intersectionTypes.get(i))) {
+				TrackCell prev = intersectionTypes.get(i - 1);
+				if (START_CELLS.contains(prev)) {
+					continue;
+				} else if (prev == TrackCell.PRE_START_LINE) {
+					// this is a finish
+					finish = intersections.get(i);
+					break;
+				} else {
+					// illegal move
+					return Pair.of(Boolean.FALSE, null);
+				}
+			}
+		}
+		return Pair.of(Boolean.TRUE, finish);
+	}
+	
+	private boolean isIntersectionLegal(Intersection i) {
+		if (i instanceof Vertex) {
+			Pair<Integer, Integer> coords = ((Vertex) i).getCoords();
+			return isNavigable(coords);
+		} else if (i instanceof Segment) {
+			Pair<Vertex, Vertex> vertices = ((Segment) i).getVertices();
+			// at least one of the vertices should be navigable
+			return isNavigable(vertices.getLeft().getCoords()) || isNavigable(vertices.getRight().getCoords());
+		}
+		throw new IllegalArgumentException("Illegal intersection: " + i);
+	}
+	
+	private TrackCell segmentType(TrackCell t1, TrackCell t2) {
+		if (t1 == null) {
+			return t2;
+		}
+		if (t2 == null) {
+			return t1;
+		}
+		return t1.getPriority() > t2.getPriority() ? t1: t2;
+	}
+	
+	private TrackCell cellTypeOfIntersection(Intersection i) {
+		if (i instanceof Vertex) {
+			Pair<Integer, Integer> coords = ((Vertex) i).getCoords();
+			return typeAt(coords);
+		} else if (i instanceof Segment) {
+			Pair<Vertex, Vertex> vertices = ((Segment) i).getVertices();
+			// at least one of the vertices should be navigable
+			return segmentType(cellTypeOfIntersection(vertices.getLeft()), cellTypeOfIntersection(vertices.getRight()));
+		}
+		throw new IllegalArgumentException("Illegal intersection: " + i);
 	}
 
 	private static void validate(final Direction[] axis, final int width) {
@@ -236,9 +439,9 @@ public class RaceTrack {
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		for (int col = 0; col < track.length; col++) {
-			for (int row = 0; row < track[col].length; row++) {
-				b.append(track[col][row].getCharacter());
+		for (int y = 0; y < track[0].length; y++) {
+			for (int x = 0; x < track.length; x++) {
+				b.append(track[x][y].getCharacter());
 			}
 			b.append("\r\n");
 		}

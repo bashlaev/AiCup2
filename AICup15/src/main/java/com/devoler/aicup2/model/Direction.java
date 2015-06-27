@@ -9,25 +9,25 @@ public enum Direction {
 	UP {
 		@Override
 		public Pair<Integer, Integer> apply(Pair<Integer, Integer> position) {
-			return Pair.of(position.getLeft() - 1, position.getRight());
+			return Pair.of(position.getLeft(), position.getRight() - 1);
 		}
 	},
 	LEFT {
 		@Override
 		public Pair<Integer, Integer> apply(Pair<Integer, Integer> position) {
-			return Pair.of(position.getLeft(), position.getRight() - 1);
+			return Pair.of(position.getLeft() - 1, position.getRight());
 		}
 	},
 	RIGHT {
 		@Override
 		public Pair<Integer, Integer> apply(Pair<Integer, Integer> position) {
-			return Pair.of(position.getLeft(), position.getRight() + 1);
+			return Pair.of(position.getLeft() + 1, position.getRight());
 		}
 	},
 	DOWN {
 		@Override
 		public Pair<Integer, Integer> apply(Pair<Integer, Integer> position) {
-			return Pair.of(position.getLeft() + 1, position.getRight());
+			return Pair.of(position.getLeft(), position.getRight() + 1);
 		}
 	};
 
@@ -41,8 +41,10 @@ public enum Direction {
 			return RIGHT;
 		case 'D':
 			return DOWN;
-		default:
+		case '0':
 			return null;
+		default:
+			throw new IllegalArgumentException("Unsupported char: " + c);
 		}
 	}
 	
