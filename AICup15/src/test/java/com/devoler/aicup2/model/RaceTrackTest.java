@@ -14,15 +14,18 @@ public class RaceTrackTest {
 	private static final String[] SOLUTIONS_1_BAD_FORMAT = { "RFUL", " U",
 			"ULd" };
 
-	private static final String[] SOLUTIONS_1_DID_NOT_FINISH = { "", "R", "RRR",
-			"RLRLRLRLUDUDUDUDUDUDLRLRLRLRLRLRLRLRDUDUDUDUDUDURLRLRL" };
+	private static final String[] SOLUTIONS_1_DID_NOT_FINISH = { "", "R",
+			"RRR", "RLRLRLRLUDUDUDUDUDUDLRLRLRLRLRLRLRLRDUDUDUDUDUDURLRLRL" };
 	private static final int[] SOLUTIONS_1_DID_NOT_FINISH_TIMES = { 0, 1, 3, 54 };
 
 	private static final String[] SOLUTIONS_1_ILLEGAL_MOVE = { "RRRLUU", "L",
-	"UL", "U00" };
+			"UL", "U00" };
 	private static final int[] SOLUTIONS_1_ILLEGAL_MOVE_TIMES = { 4, 1, 2, 3 };
 
-	private static final String[] SOLUTIONS_1_SUCCESS = { "RLRLRLRLUDUDUDUDUDUDLRLRLRLRLRLRLRLRDUDUDUDUDUDURLRLRLR", "RLRLRLRLUDUDUDUDUDUDLRLRLRLRLRLRLRLRDUDUDUDUDUDURLRR", "RLRLRLRLUDUDUDUDUDUDLRLRLRLRLRLRLRLRDUDUDUDUDUDURLRUR" };
+	private static final String[] SOLUTIONS_1_SUCCESS = {
+			"RLRLRLRLUDUDUDUDUDUDLRLRLRLRLRLRLRLRDUDUDUDUDUDURLRLRLR",
+			"RLRLRLRLUDUDUDUDUDUDLRLRLRLRLRLRLRLRDUDUDUDUDUDURLRR",
+			"RLRLRLRLUDUDUDUDUDUDLRLRLRLRLRLRLRLRDUDUDUDUDUDURLRUR" };
 	private static final double[] SOLUTIONS_1_SUCCESS_TIMES = { 55, 52, 52.5 };
 
 	private static final String TRACK_INVALID_WIDTH = "50 RRRUUUUULLLLLDDDDDRR";
@@ -47,7 +50,8 @@ public class RaceTrackTest {
 	public void testSolutionBadFormat() {
 		RaceTrack track = RaceTrackParser.parse(TRACK_1);
 		for (String badFormatSolution : SOLUTIONS_1_BAD_FORMAT) {
-			assertParseError(track.checkSolution(badFormatSolution));
+			assertParseError(SolutionChecker.checkSolution(track,
+					badFormatSolution));
 		}
 	}
 
@@ -55,8 +59,8 @@ public class RaceTrackTest {
 	public void testSolutionSuccess() {
 		RaceTrack track = RaceTrackParser.parse(TRACK_1);
 		for (int i = 0; i < SOLUTIONS_1_SUCCESS.length; i++) {
-			assertSuccess(track.checkSolution(SOLUTIONS_1_SUCCESS[i]),
-					SOLUTIONS_1_SUCCESS_TIMES[i]);
+			assertSuccess(SolutionChecker.checkSolution(track,
+					SOLUTIONS_1_SUCCESS[i]), SOLUTIONS_1_SUCCESS_TIMES[i]);
 		}
 	}
 
@@ -64,7 +68,8 @@ public class RaceTrackTest {
 	public void testSolutionDidNotFinish() {
 		RaceTrack track = RaceTrackParser.parse(TRACK_1);
 		for (int i = 0; i < SOLUTIONS_1_DID_NOT_FINISH.length; i++) {
-			assertDidNotFinish(track.checkSolution(SOLUTIONS_1_DID_NOT_FINISH[i]),
+			assertDidNotFinish(SolutionChecker.checkSolution(track,
+					SOLUTIONS_1_DID_NOT_FINISH[i]),
 					SOLUTIONS_1_DID_NOT_FINISH_TIMES[i]);
 		}
 	}
@@ -73,7 +78,8 @@ public class RaceTrackTest {
 	public void testSolutionIllegalMove() {
 		RaceTrack track = RaceTrackParser.parse(TRACK_1);
 		for (int i = 0; i < SOLUTIONS_1_ILLEGAL_MOVE.length; i++) {
-			assertIllegalMove(track.checkSolution(SOLUTIONS_1_ILLEGAL_MOVE[i]),
+			assertIllegalMove(SolutionChecker.checkSolution(track,
+					SOLUTIONS_1_ILLEGAL_MOVE[i]),
 					SOLUTIONS_1_ILLEGAL_MOVE_TIMES[i]);
 		}
 	}
@@ -85,8 +91,10 @@ public class RaceTrackTest {
 
 	private void assertSuccess(RaceResult result, Number expectedTime) {
 		assertEquals(Status.SUCCESS, result.getStatus());
-		assertTrue("actual: " + result.getTime(), Math.abs(expectedTime.doubleValue()
-				- result.getTime().doubleValue()) < 0.01d);
+		assertTrue(
+				"actual: " + result.getTime(),
+				Math.abs(expectedTime.doubleValue()
+						- result.getTime().doubleValue()) < 0.01d);
 	}
 
 	private void assertDidNotFinish(RaceResult result, int expectedTime) {

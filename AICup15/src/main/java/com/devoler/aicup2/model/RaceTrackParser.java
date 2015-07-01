@@ -9,11 +9,11 @@ import org.apache.commons.lang3.tuple.Pair;
 public final class RaceTrackParser {
 	private static final int MIN_WIDTH = 0;
 	private static final int MAX_WIDTH = 20;
-	
+
 	private RaceTrackParser() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * Parses a race track from a formatted string.
 	 * 
@@ -35,7 +35,7 @@ public final class RaceTrackParser {
 		validate(axis, width);
 		return new RaceTrack(transform(axis, width));
 	}
-	
+
 	private static void validate(final Direction[] axis, final int width) {
 		// race track should be non-empty and shouldn't contain null elements
 		Validate.notNull(axis, "RaceTrack axis is null");
@@ -54,7 +54,7 @@ public final class RaceTrackParser {
 		// make sure the race track doesn't cross itself
 		validateNoSelfCrossing(axis);
 	}
-	
+
 	private static void validateFullCircle(final Direction[] axis) {
 		final Pair<Integer, Integer> start = Pair.of(0, 0);
 		Pair<Integer, Integer> pos = start;
@@ -81,7 +81,7 @@ public final class RaceTrackParser {
 					pos);
 		}
 	}
-	
+
 	private static TrackCell[][] transform(Direction[] axis, int width) {
 		Pair<TrackCell[][], Pair<Integer, Integer>> trackAxis = formAxis(axis,
 				width);
@@ -96,7 +96,7 @@ public final class RaceTrackParser {
 		validateStartLine(cells);
 		return cells;
 	}
-	
+
 	private static Pair<TrackCell[][], Pair<Integer, Integer>> formAxis(
 			Direction[] axis, int width) {
 		final Set<Pair<Integer, Integer>> axisCoords = new HashSet<>();
@@ -155,8 +155,8 @@ public final class RaceTrackParser {
 		return target;
 	}
 
-	private static boolean convertToOuterNonTrack(TrackCell[][] source,
-			int x, int y) {
+	private static boolean convertToOuterNonTrack(TrackCell[][] source, int x,
+			int y) {
 		if (source[x][y] != null) {
 			return false;
 		}
@@ -203,15 +203,19 @@ public final class RaceTrackParser {
 	private static void fillStartLine(TrackCell[][] source,
 			Pair<Integer, Integer> startSpot, Direction direction, int width) {
 		source[startSpot.getLeft()][startSpot.getRight()] = TrackCell.START_CELL;
-		drawOrthogonalLine(source, startSpot, direction, width, TrackCell.START_LINE);
+		drawOrthogonalLine(source, startSpot, direction, width,
+				TrackCell.START_LINE);
 		Pair<Integer, Integer> postStartSpot = direction.apply(startSpot);
 		source[postStartSpot.getLeft()][postStartSpot.getRight()] = TrackCell.POST_START_LINE;
-		drawOrthogonalLine(source, postStartSpot, direction, width, TrackCell.POST_START_LINE);
-		Pair<Integer, Integer> preStartSpot = direction.opposite().apply(startSpot);
+		drawOrthogonalLine(source, postStartSpot, direction, width,
+				TrackCell.POST_START_LINE);
+		Pair<Integer, Integer> preStartSpot = direction.opposite().apply(
+				startSpot);
 		source[preStartSpot.getLeft()][preStartSpot.getRight()] = TrackCell.PRE_START_LINE;
-		drawOrthogonalLine(source, preStartSpot, direction, width, TrackCell.PRE_START_LINE);
+		drawOrthogonalLine(source, preStartSpot, direction, width,
+				TrackCell.PRE_START_LINE);
 	}
-	
+
 	private static void validateStartLine(TrackCell[][] cells) {
 		int startCells = 0;
 		for (int x = 0; x < cells.length; x++) {
@@ -229,13 +233,15 @@ public final class RaceTrackParser {
 		Validate.isTrue(startCells == 1, "Multiple start spots");
 	}
 
-	private static boolean isOfType(TrackCell[][] source, int x, int y, TrackCell type) {
-		return y >= 0 && x >= 0 && x < source.length
-				&& y < source[0].length && source[x][y] != null
-				&& source[x][y] == type;
+	private static boolean isOfType(TrackCell[][] source, int x, int y,
+			TrackCell type) {
+		return y >= 0 && x >= 0 && x < source.length && y < source[0].length
+				&& source[x][y] != null && source[x][y] == type;
 	}
 
-	private static void drawOrthogonalLine(TrackCell[][] source, Pair<Integer, Integer> startSpot, Direction direction, int width, TrackCell type) {
+	private static void drawOrthogonalLine(TrackCell[][] source,
+			Pair<Integer, Integer> startSpot, Direction direction, int width,
+			TrackCell type) {
 		for (Direction ort : direction.orthogonal()) {
 			Pair<Integer, Integer> pos = startSpot;
 			for (int i = 0; i < width; i++) {
@@ -248,10 +254,9 @@ public final class RaceTrackParser {
 					"Start/finish line should be straight");
 		}
 	}
-	
+
 	private static boolean isNavigable(TrackCell[][] source, int x, int y) {
-		return y >= 0 && x >= 0 && x < source.length
-				&& y < source[0].length && source[x][y] != null
-				&& source[x][y].isNavigable();
+		return y >= 0 && x >= 0 && x < source.length && y < source[0].length
+				&& source[x][y] != null && source[x][y].isNavigable();
 	}
 }
