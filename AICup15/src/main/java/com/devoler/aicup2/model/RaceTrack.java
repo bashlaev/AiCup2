@@ -264,8 +264,8 @@ public class RaceTrack {
 			speed = move == null ? speed: move.apply(speed);
 			Pair<Integer, Integer> newPos = applySpeed(pos, speed);
 			Pair<Boolean, Intersection> result = applyMove(pos, newPos); 
+			log.add(newPos);
 			if (result.getLeft()) {
-				log.add(newPos);
 				if (result.getRight() != null) {
 					// need to calculate the last piece of time correctly
 					double prop = calcProportion(pos, newPos, result.getRight());
@@ -337,10 +337,11 @@ public class RaceTrack {
 			}
 			intersectionTypes.add(cellTypeOfIntersection(i));
 		}
-		// illegal sequences are: anything but pre-start/start/start cell -> start/start cell
 		for(int i = 1; i < intersectionTypes.size(); i++) {
+			TrackCell prev = intersectionTypes.get(i - 1);
+			// illegal sequences are: 
 			if (START_CELLS.contains(intersectionTypes.get(i))) {
-				TrackCell prev = intersectionTypes.get(i - 1);
+				// 1. anything but pre-start/start/start cell -> start/start cell
 				if (START_CELLS.contains(prev)) {
 					continue;
 				} else if (prev == TrackCell.PRE_START_LINE) {
@@ -348,6 +349,12 @@ public class RaceTrack {
 					finish = intersections.get(i);
 					break;
 				} else {
+					// illegal move
+					return Pair.of(Boolean.FALSE, null);
+				}
+			} else if (intersectionTypes.get(i) == TrackCell.PRE_START_LINE) {
+				// 2. anything but track/pre-start -> pre-start
+				if ((prev != TrackCell.PRE_START_LINE) && (prev != TrackCell.TRACK)) {
 					// illegal move
 					return Pair.of(Boolean.FALSE, null);
 				}
