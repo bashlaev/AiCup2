@@ -39,13 +39,13 @@ public class RaceTrackTest {
 		expectException(TRACK_NO_FULL_CIRCLE);
 		expectException(TRACK_SELF_CROSSING);
 		expectException(TRACK_INVALID_START_LINE);
-		RaceTrack valid = RaceTrack.parse(TRACK_1);
+		RaceTrack valid = RaceTrackParser.parse(TRACK_1);
 		System.out.println(valid.toString());
 	}
 
 	@Test
 	public void testSolutionBadFormat() {
-		RaceTrack track = RaceTrack.parse(TRACK_1);
+		RaceTrack track = RaceTrackParser.parse(TRACK_1);
 		for (String badFormatSolution : SOLUTIONS_1_BAD_FORMAT) {
 			assertParseError(track.checkSolution(badFormatSolution));
 		}
@@ -53,7 +53,7 @@ public class RaceTrackTest {
 
 	@Test
 	public void testSolutionSuccess() {
-		RaceTrack track = RaceTrack.parse(TRACK_1);
+		RaceTrack track = RaceTrackParser.parse(TRACK_1);
 		for (int i = 0; i < SOLUTIONS_1_SUCCESS.length; i++) {
 			assertSuccess(track.checkSolution(SOLUTIONS_1_SUCCESS[i]),
 					SOLUTIONS_1_SUCCESS_TIMES[i]);
@@ -62,7 +62,7 @@ public class RaceTrackTest {
 
 	@Test
 	public void testSolutionDidNotFinish() {
-		RaceTrack track = RaceTrack.parse(TRACK_1);
+		RaceTrack track = RaceTrackParser.parse(TRACK_1);
 		for (int i = 0; i < SOLUTIONS_1_DID_NOT_FINISH.length; i++) {
 			assertDidNotFinish(track.checkSolution(SOLUTIONS_1_DID_NOT_FINISH[i]),
 					SOLUTIONS_1_DID_NOT_FINISH_TIMES[i]);
@@ -71,7 +71,7 @@ public class RaceTrackTest {
 
 	@Test
 	public void testSolutionIllegalMove() {
-		RaceTrack track = RaceTrack.parse(TRACK_1);
+		RaceTrack track = RaceTrackParser.parse(TRACK_1);
 		for (int i = 0; i < SOLUTIONS_1_ILLEGAL_MOVE.length; i++) {
 			assertIllegalMove(track.checkSolution(SOLUTIONS_1_ILLEGAL_MOVE[i]),
 					SOLUTIONS_1_ILLEGAL_MOVE_TIMES[i]);
@@ -101,7 +101,7 @@ public class RaceTrackTest {
 
 	private void expectException(String track) {
 		try {
-			RaceTrack.parse(track);
+			RaceTrackParser.parse(track);
 			fail("Exception expected");
 		} catch (Exception expected) {
 			// ignored
