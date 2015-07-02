@@ -8,6 +8,14 @@ public class RaceTrack {
 	RaceTrack(final TrackCell[][] track) {
 		this.track = track;
 	}
+	
+	public int getWidth() {
+		return track.length;
+	}
+
+	public int getHeight() {
+		return track[0].length;
+	}
 
 	public Pair<Integer, Integer> getStartCell() {
 		for (int x = 0; x < track.length; x++) {
