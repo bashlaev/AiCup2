@@ -13,11 +13,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.devoler.aicup2.model.Direction;
+import com.devoler.aicup2.view.Utils;
 
 @SuppressWarnings("serial")
 public final class EditorPanel extends JPanel {
@@ -63,11 +67,19 @@ public final class EditorPanel extends JPanel {
 				case KeyEvent.VK_DELETE:
 					model.removeTip();
 					break;
-				case KeyEvent.VK_PLUS:
+				case KeyEvent.VK_Q:
 					model.incWidth();
 					break;
-				case KeyEvent.VK_MINUS:
+				case KeyEvent.VK_A:
 					model.decWidth();
+					break;
+				case KeyEvent.VK_ENTER:
+					JDialog dialog = new JDialog((JFrame) getTopLevelAncestor(), true);
+					JTextArea text = new JTextArea(model.validateAndEncode());
+					dialog.getContentPane().add(text);
+					dialog.pack();
+					Utils.centerWindow(dialog);
+					dialog.setVisible(true);
 					break;
 				}
 				repaint();
