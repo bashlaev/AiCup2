@@ -128,13 +128,13 @@ public final class RaceTrackParser {
 		minY -= width;
 		maxX += width;
 		maxY += width;
-		TrackCell[][] cells = new TrackCell[maxX - minX + 1][maxY - minY + 1];
+		TrackCell[][] cells = new TrackCell[maxX - minX + 3][maxY - minY + 3];
 		for (Pair<Integer, Integer> axisCoord : axisCoords) {
 			int x = axisCoord.getLeft();
 			int y = axisCoord.getRight();
-			cells[x - minX][y - minY] = TrackCell.TRACK;
+			cells[x - minX + 1][y - minY + 1] = TrackCell.TRACK;
 		}
-		return Pair.of(cells, Pair.of(-minX, -minY));
+		return Pair.of(cells, Pair.of(1 - minX, 1 - minY));
 	}
 
 	private static TrackCell[][] growLayer(TrackCell[][] source) {
