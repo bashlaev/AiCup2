@@ -63,6 +63,12 @@ public final class EditorPanel extends JPanel {
 				case KeyEvent.VK_DELETE:
 					model.removeTip();
 					break;
+				case KeyEvent.VK_PLUS:
+					model.incWidth();
+					break;
+				case KeyEvent.VK_MINUS:
+					model.decWidth();
+					break;
 				}
 				repaint();
 			}

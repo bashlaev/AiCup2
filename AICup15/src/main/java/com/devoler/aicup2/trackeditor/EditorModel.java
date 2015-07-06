@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.devoler.aicup2.model.Direction;
+import com.devoler.aicup2.model.RaceTrackParser;
 
 final class EditorModel {
 	private int width;
@@ -66,6 +67,18 @@ final class EditorModel {
 			recalculatePoints();
 		}
 	}
+	
+	public synchronized void incWidth() {
+		width++;
+		recalculatePoints();
+	}
+
+	public synchronized void decWidth() {
+		if (width > 0) {
+			width--;
+			recalculatePoints();
+		}
+	}
 
 	public synchronized List<Pair<Integer, Integer>> getAxisPoints() {
 		return new ArrayList<>(axisPoints);
@@ -73,5 +86,20 @@ final class EditorModel {
 	
 	public synchronized Set<Pair<Integer, Integer>> getTrackPoints() {
 		return new HashSet<>(trackPoints);
+	}
+	
+	public synchronized String validateAndEncode() {
+		try {
+			StringBuilder b = new StringBuilder();
+			b.append(width).append(' ');
+			for (Direction direction : axis) {
+				b.append(direction.getChar());
+			}
+			String track = b.toString();
+			RaceTrackParser.parse(track);
+			return track;
+		} catch (RuntimeException exc) {
+			return "Could not validate track: " + exc.getMessage();
+		}
 	}
 }

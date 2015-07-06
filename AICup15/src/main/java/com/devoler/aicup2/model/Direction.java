@@ -11,11 +11,21 @@ public enum Direction {
 		public Pair<Integer, Integer> apply(Pair<Integer, Integer> position) {
 			return Pair.of(position.getLeft(), position.getRight() - 1);
 		}
+		
+		@Override
+		public char getChar() {
+			return 'U';
+		}
 	},
 	LEFT {
 		@Override
 		public Pair<Integer, Integer> apply(Pair<Integer, Integer> position) {
 			return Pair.of(position.getLeft() - 1, position.getRight());
+		}
+
+		@Override
+		public char getChar() {
+			return 'L';
 		}
 	},
 	RIGHT {
@@ -23,11 +33,21 @@ public enum Direction {
 		public Pair<Integer, Integer> apply(Pair<Integer, Integer> position) {
 			return Pair.of(position.getLeft() + 1, position.getRight());
 		}
+
+		@Override
+		public char getChar() {
+			return 'R';
+		}
 	},
 	DOWN {
 		@Override
 		public Pair<Integer, Integer> apply(Pair<Integer, Integer> position) {
 			return Pair.of(position.getLeft(), position.getRight() + 1);
+		}
+		
+		@Override
+		public char getChar() {
+			return 'D';
 		}
 	};
 
@@ -57,4 +77,6 @@ public enum Direction {
 	}
 
 	public abstract Pair<Integer, Integer> apply(Pair<Integer, Integer> position);
+	
+	public abstract char getChar();
 }
