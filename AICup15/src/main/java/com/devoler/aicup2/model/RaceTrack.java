@@ -37,8 +37,10 @@ public class RaceTrack {
 	}
 
 	public boolean isNavigable(Pair<Integer, Integer> coords) {
-		int x = coords.getLeft();
-		int y = coords.getRight();
+		return isNavigable(coords.getLeft(), coords.getRight());
+	}
+	
+	public boolean isNavigable(int x, int y) {
 		return y >= 0 && x >= 0 && x < track.length && y < track[0].length
 				&& track[x][y] != null && track[x][y].isNavigable();
 	}
