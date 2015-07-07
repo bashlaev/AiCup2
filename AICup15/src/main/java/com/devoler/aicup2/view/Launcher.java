@@ -49,8 +49,8 @@ public final class Launcher {
 		// allImages.getInsets().set(5, 5, 5, 5);
 		allImages.setLayout(new BoxLayout(allImages, BoxLayout.PAGE_AXIS));
 		allImages.add(Box.createVerticalStrut(10));
-		for (String testTrack : TEST_TRACKS) {
-			allImages.add(panelForTrack(testTrack, url));
+		for (int testNo = 0; testNo < TEST_TRACKS.length; testNo++) {
+			allImages.add(panelForTrack(testNo, TEST_TRACKS[testNo], url));
 			allImages.add(Box.createVerticalStrut(30));
 		}
 		allImages.revalidate();
@@ -69,7 +69,7 @@ public final class Launcher {
 		frame.setVisible(true);
 	}
 
-	private static JPanel panelForTrack(final String testTrack, final URL url) {
+	private static JPanel panelForTrack(final int testNo, final String testTrack, final URL url) {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		panel.add(Box.createHorizontalStrut(10));

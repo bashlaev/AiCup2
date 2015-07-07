@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.devoler.aicup2.persistent">
+
+	<class name="TestResults" table="TestResults">
+		<id name="id" type="long">
+			<generator class="native" />
+		</id>
+		<property name="testNo" type="long" not-null="true" index="testNoIndex" />
+		<property name="testTimestamp" type="timestamp" not-null="true" index="testTimestampIndex"/>
+		<property name="testResult" type="long" not-null="true" index="testResultIndex"/>
+	</class>
+
+</hibernate-mapping>

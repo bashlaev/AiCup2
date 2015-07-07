@@ -32,6 +32,13 @@ jar {
 
 dependencies {
 	compile('org.apache.commons:commons-lang3:3.3.2')
+    //----------derby--------------
+    compile('org.apache.derby:derby:10.11.1.1')
+    //----------Hibernate----------
+    compile('org.hibernate:hibernate-core:3.6.10.Final')
+    compile('org.hibernate:hibernate-c3p0:3.6.10.Final')
+    compile('org.hibernate:hibernate-ehcache:3.6.10.Final')
     //----------test------------
     testCompile('junit:junit:4.11')
+    testCompile('org.hsqldb:hsqldb:2.3.0')
 }
