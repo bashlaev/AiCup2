@@ -10,11 +10,11 @@ public class DAOTest {
 
 	@Test
 	public void test() {
-		DAO.saveTestResult(1, 100500);
-		DAO.saveTestResult(1, 100400);
-		DAO.saveTestResult(1, 100600);
-		DAO.saveTestResult(1, 100000);
-		DAO.saveTestResult(2, 100);
+		DAO.saveTestResult(1, 100500, "s1");
+		DAO.saveTestResult(1, 100400, "s2");
+		DAO.saveTestResult(1, 100600, "s3");
+		DAO.saveTestResult(1, 100000, "s4");
+		DAO.saveTestResult(2, 100, String.format("%010000d", 1));
 		List<TestResults> results1 = DAO.getTestResults(1, 10);
 		assertEquals(4, results1.size());
 		assertEquals(100000, results1.get(0).getTestResult());
@@ -29,5 +29,4 @@ public class DAOTest {
 		assertEquals(1, results2.size());
 		assertEquals(100, results2.get(0).getTestResult());
 	}
-
 }

@@ -78,7 +78,7 @@ public final class DAO {
 		}
 	}
 	
-	public static synchronized void saveTestResult(long testNo, long testResult) {
+	public static synchronized void saveTestResult(long testNo, long testResult, String solution) {
 		try {
 			Session session = getSession();
 			beginTransaction();
@@ -87,6 +87,7 @@ public final class DAO {
 				results.setTestNo(testNo);
 				results.setTestResult(testResult);
 				results.setTestTimestamp(new Date());
+				results.setSolution(solution);
 				session.save(results);
 				commitTransaction();
 			} catch (RuntimeException e) {
@@ -108,6 +109,7 @@ public final class DAO {
 						.createCriteria(TestResults.class)
 						.add(Restrictions.eq("testNo", testNo))
 						.addOrder(Order.asc("testResult"))
+						.addOrder(Order.desc("testTimestamp"))
 						.setMaxResults(maxResults).list();
 				commitTransaction();
 				return results;

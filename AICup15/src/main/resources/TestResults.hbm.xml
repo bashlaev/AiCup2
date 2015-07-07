@@ -12,6 +12,7 @@
 		<property name="testNo" type="long" not-null="true" index="testNoIndex" />
 		<property name="testTimestamp" type="timestamp" not-null="true" index="testTimestampIndex"/>
 		<property name="testResult" type="long" not-null="true" index="testResultIndex"/>
+		<property name="solution" type="text" not-null="true"/>
 	</class>
 
 </hibernate-mapping>

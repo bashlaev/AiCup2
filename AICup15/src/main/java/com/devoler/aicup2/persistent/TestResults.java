@@ -7,6 +7,7 @@ public final class TestResults {
 	private long testNo;
 	private Date testTimestamp;
 	private long testResult;
+	private String solution;
 	
 	public long getId() {
 		return id;
@@ -38,6 +39,14 @@ public final class TestResults {
 	
 	public void setTestTimestamp(Date testTimestamp) {
 		this.testTimestamp = testTimestamp;
+	}
+	
+	public String getSolution() {
+		return solution;
+	}
+	
+	public void setSolution(String solution) {
+		this.solution = solution;
 	}
 	
 	@Override
