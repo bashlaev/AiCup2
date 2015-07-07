@@ -40,8 +40,6 @@ public final class RaceTrackRenderer {
 			RaceTrackRenderer.class.getResource("/img/15x15_corner_small.png"));
 	private static final Image cornerLU, cornerLD, cornerRU;
 	
-//	private static final Image[][] quarters;
-	
 	static {
 		MediaTracker mt = new MediaTracker(new JPanel());
 		int id = 0;
@@ -79,24 +77,6 @@ public final class RaceTrackRenderer {
 		} catch (InterruptedException e) {
 			throw new RuntimeException("Could not load resources");
 		}
-//		quarters = new Image[][]{
-//			{nonTrackImage},
-//			{trackImage, arcLD},
-//			{trackImage, arcRD},
-//			{trackImage, stripeU},
-//			{trackImage, arcRU},
-//			{trackImage, cornerLU, cornerRD},
-//			{trackImage, stripeL},
-//			{trackImage, cornerLU},
-//			{trackImage, arcLU},
-//			{trackImage, stripeR},
-//			{trackImage, cornerRU, cornerLD},
-//			{trackImage, cornerRU},
-//			{trackImage, stripeD},
-//			{trackImage, cornerRD},
-//			{trackImage, cornerLD},
-//			{trackImage}
-//		};
 	}
 	
 	private static BufferedImage toBufferedImage(Image img){
@@ -195,14 +175,6 @@ public final class RaceTrackRenderer {
 	}
 
 	private static void renderCellNonTrack(Graphics2D g, int x, int y, boolean LU, boolean U, boolean RU, boolean R, boolean RD, boolean D, boolean LD, boolean L) {
-//		g.drawImage(nonTrackImage, x, y, null);
-		
-		// render four quarters
-//		renderQuarter(g, x, y, LU, U, false, L);
-//		renderQuarter(g, x + CELL_SIZE / 2, y, U, RU, R, false);
-//		renderQuarter(g, x + CELL_SIZE / 2, y + CELL_SIZE / 2, false, R, RD, D);
-//		renderQuarter(g, x, y + CELL_SIZE / 2, L, false, D, LD);
-		
 		// render LU
 		g.setClip(x, y, CELL_SIZE / 2, CELL_SIZE / 2);
 		if (!(L || LU || U)) {
@@ -279,35 +251,10 @@ public final class RaceTrackRenderer {
 			g.drawImage(fragment, x + CELL_SIZE / 2, y + CELL_SIZE / 2, null);
 		}
 	}
-	
-//	private static void renderQuarter(Graphics2D g, int x, int y, boolean LU, boolean RU, boolean RD, boolean LD) {
-//		g.setClip(x, y, CELL_SIZE / 2, CELL_SIZE / 2);
-//		int index = 0;
-//		if (LU) {
-//			index |= 8;
-//		}
-//		if (RU) {
-//			index |= 4;
-//		}
-//		if (RD) {
-//			index |= 2;
-//		}
-//		if (LD) {
-//			index |= 1;
-//		}
-//		for(Image img: quarters[index]) {
-//			g.drawImage(img, x, y, null);
-//		}
-//	}
 
 	private static void renderCellStartLine(Graphics2D g, int x, int y) {
 		g.setColor(new Color(0xaa00ff00, true));
 		g.fillRect(x, y, CELL_SIZE, CELL_SIZE);
-
-//		g.drawImage(cornerRD, x, y, null);
-//		g.drawImage(cornerLD, x + CELL_SIZE / 2, y, null);
-//		g.drawImage(cornerRU, x, y + CELL_SIZE / 2, null);
-//		g.drawImage(cornerLU, x + CELL_SIZE / 2, y + CELL_SIZE / 2, null);
 	}
 
 	public static BufferedImage renderRaceResult(RaceTrack track,

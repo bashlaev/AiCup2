@@ -13,21 +13,24 @@ import javax.swing.border.BevelBorder;
 import com.devoler.aicup2.model.RaceTrack;
 import com.devoler.aicup2.model.RaceTrackParser;
 
+@SuppressWarnings("serial")
 public final class RaceTrackPanel extends JPanel {
 	private static final int SIZE = 600;
 
-	private final String raceTrackString;
 	private final RaceTrack raceTrack;
 	private final BufferedImage trackImage;
 	private final Image trackImageResized;
 
 	public RaceTrackPanel(final String raceTrackString) {
 		super();
-		this.raceTrackString = raceTrackString;
 		raceTrack = RaceTrackParser.parse(raceTrackString);
 		trackImage = RaceTrackRenderer.renderTrack(raceTrack);
 		trackImageResized = resize(trackImage, SIZE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+	}
+	
+	public RaceTrack getRaceTrack() {
+		return raceTrack;
 	}
 
 	private Image resize(BufferedImage source, int size) {
