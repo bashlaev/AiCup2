@@ -30,7 +30,9 @@ public final class RaceTrackRenderer {
 			RaceTrackRenderer.class.getResource("/img/30x30_grass.png"));
 	private static final Image arcLU = Toolkit.getDefaultToolkit().createImage(
 			RaceTrackRenderer.class.getResource("/img/15x15_corner.png"));
-	private static final Image arcRU, arcLD, arcRD;
+	private static final Image arcLD = Toolkit.getDefaultToolkit().createImage(
+			RaceTrackRenderer.class.getResource("/img/15x15_corner2.png"));
+	private static final Image arcRU, arcRD;
 	private static final Image stripeD = Toolkit.getDefaultToolkit().createImage(
 			RaceTrackRenderer.class.getResource("/img/15x15_hor.png"));
 	private static final Image stripeR = Toolkit.getDefaultToolkit().createImage(
@@ -46,6 +48,7 @@ public final class RaceTrackRenderer {
 		mt.addImage(trackImage, id++);
 		mt.addImage(nonTrackImage, id++);
 		mt.addImage(arcLU, id++);
+		mt.addImage(arcLD, id++);
 		mt.addImage(stripeD, id++);
 		mt.addImage(stripeR, id++);
 		mt.addImage(cornerRD, id++);
@@ -54,10 +57,8 @@ public final class RaceTrackRenderer {
 		} catch (InterruptedException e) {
 			throw new RuntimeException("Could not load resources");
 		}
-		BufferedImage bufArc = toBufferedImage(arcLU); 
-		arcLD = rotate(bufArc, 270);
-		arcRD = rotate(bufArc, 180);
-		arcRU = rotate(bufArc, 90);
+		arcRD = rotate(toBufferedImage(arcLU), 180);
+		arcRU = rotate(toBufferedImage(arcLD), 180);
 		stripeU = rotate(toBufferedImage(stripeD), 180);
 		stripeL = rotate(toBufferedImage(stripeR), 180);
 		BufferedImage bufCorner = toBufferedImage(cornerRD);
