@@ -48,6 +48,10 @@ public class RaceTrack {
 	public TrackCell safeCellAt(Pair<Integer, Integer> coords) {
 		int x = coords.getLeft();
 		int y = coords.getRight();
+		return safeCellAt(x, y);
+	}
+
+	public TrackCell safeCellAt(int x, int y) {
 		if (y >= 0 && x >= 0 && x < track.length && y < track[0].length) {
 			return track[x][y];
 		}
