@@ -4,16 +4,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
 public final class RemoteSolver implements Solver {
+	private static final int CONNECT_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(10);
+	private static final int TIMEOUT = (int) TimeUnit.SECONDS.toMillis(60);
+	
 	private class SolverCallable implements Callable<String> {
 		private final String raceTrackString;
 		
@@ -35,12 +40,13 @@ public final class RemoteSolver implements Solver {
 			connection.setRequestProperty("Accept", "text/plain");
 			connection.setRequestProperty("Content-Type", "text/plain");
 			connection.setRequestProperty("Content-Length", String.valueOf(raceTrackBytes.length));
-			connection.setConnectTimeout(10000);
-			connection.setReadTimeout(60000);
+			connection.setConnectTimeout(CONNECT_TIMEOUT);
+			connection.setReadTimeout(TIMEOUT);
 			OutputStream os = connection.getOutputStream();
 			os.write(raceTrackBytes);
 			os.flush();
 			os.close();
+			long startTime = System.currentTimeMillis();
 			int responseCode = connection.getResponseCode();
 			if (responseCode != 200) {
 				throw new RuntimeException("Response code: " + responseCode);
@@ -51,6 +57,10 @@ public final class RemoteSolver implements Solver {
 				byte[] data = new byte[256];
 				while ((nRead = is.read(data, 0, data.length)) != -1) {
 					buffer.write(data, 0, nRead);
+					// can't only rely on read timeout because server may write in chunks
+					if (System.currentTimeMillis() - startTime > TIMEOUT) {
+						throw new SocketTimeoutException();
+					}
 				}
 				buffer.flush();
 			}
@@ -65,6 +75,10 @@ public final class RemoteSolver implements Solver {
 
 	public RemoteSolver(final URL url) {
 		this.url = url;
+	}
+	
+	public URL getUrl() {
+		return url;
 	}
 
 	@Override

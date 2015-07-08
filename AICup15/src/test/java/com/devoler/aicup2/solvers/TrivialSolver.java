@@ -9,6 +9,7 @@ public final class TrivialSolver extends CallableSolver {
 		return new Callable<String>() {
 			@Override
 			public String call() throws Exception {
+				Thread.sleep(20000);
 				StringTokenizer st = new StringTokenizer(task, " ");
 				// ignore width
 				st.nextToken();
