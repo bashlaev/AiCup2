@@ -34,9 +34,9 @@ public class RaceResult {
 
 	public static enum Status {
 		SUCCESS,
-		COULD_NOT_PARSE_SOLUTION,
 		DID_NOT_FINISH,
-		ILLEGAL_MOVE;
+		ILLEGAL_MOVE,
+		COULD_NOT_PARSE_SOLUTION;
 	}
 	
 	private final List<Pair<Integer, Integer>> raceLog = new ArrayList<>();

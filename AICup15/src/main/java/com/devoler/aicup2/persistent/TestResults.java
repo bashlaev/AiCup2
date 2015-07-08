@@ -5,6 +5,7 @@ import java.util.Date;
 public final class TestResults {
 	private long id;
 	private long testNo;
+	private int status;
 	private Date testTimestamp;
 	private long testResult;
 	private String solution;
@@ -19,6 +20,14 @@ public final class TestResults {
 	
 	public long getTestResult() {
 		return testResult;
+	}
+	
+	public int getStatus() {
+		return status;
+	}
+	
+	public void setStatus(int status) {
+		this.status = status;
 	}
 	
 	public Date getTestTimestamp() {

@@ -129,38 +129,67 @@ public final class SingleTestPanel extends JPanel {
 
 		@Override
 		public String getElementAt(int index) {
+			StringBuilder b = new StringBuilder();
+			b.append("<html>").append(index + 1).append(". ");
 			synchronized (mutex) {
 				if (index >= contents.size()) {
-					return (index + 1) + ". -";
-				}
-				TestResults r = contents.get(index);
-				long millis = r.getTestResult();
-				String time = "";
-				long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-				if (minutes > 0) {
-					time += minutes + ":";
-					millis -= TimeUnit.MINUTES.toMillis(minutes);
-				}
-				long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-				time += String.format("%02d", seconds) + ".";
-				millis -= TimeUnit.SECONDS.toMillis(seconds);
-				time += String.format("%03d", millis);
-				final String when;
-				long millisPast = System.currentTimeMillis()
-						- r.getTestTimestamp().getTime();
-				if (millisPast >= TimeUnit.HOURS.toMillis(1)) {
-					when = TimeUnit.MILLISECONDS.toHours(millisPast)
-							+ " hr. ago";
-				} else if (millisPast >= TimeUnit.MINUTES.toMillis(1)) {
-					when = TimeUnit.MILLISECONDS.toMinutes(millisPast)
-							+ " min. ago";
+					b.append(" - </html>");
 				} else {
-					when = "just now";
+					TestResults r = contents.get(index);
+					String time = timeToLapTime(r.getTestResult());
+					String when = whenToString(r.getTestTimestamp().getTime());
+					RaceResult.Status status = Status.values()[r.getStatus()];
+					b.append(statusToString(status));
+					if (status == Status.SUCCESS) {
+						b.append("<font color=green><b>").append(time).append("</b></font>");
+					}
+					b.append("  (").append(when).append(")</html>");
 				}
-				return (index + 1) + ". " + time + "  (" + when + ")";
 			}
+			return b.toString();
 		}
 
+	}
+	
+	private static String whenToString(long time) {
+		long millisPast = System.currentTimeMillis()
+				- time;
+		if (millisPast >= TimeUnit.HOURS.toMillis(1)) {
+			return TimeUnit.MILLISECONDS.toHours(millisPast)
+					+ " hr. ago";
+		} else if (millisPast >= TimeUnit.MINUTES.toMillis(1)) {
+			return TimeUnit.MILLISECONDS.toMinutes(millisPast)
+					+ " min. ago";
+		}
+		return "just now";
+	}
+	
+	private static String timeToLapTime(long millis) {
+		String time = "";
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+		if (minutes > 0) {
+			time += minutes + ":";
+			millis -= TimeUnit.MINUTES.toMillis(minutes);
+		}
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+		time += String.format("%02d", seconds) + ".";
+		millis -= TimeUnit.SECONDS.toMillis(seconds);
+		time += String.format("%03d", millis);
+		return time;
+	}
+	
+	private static String statusToString(RaceResult.Status status) {
+		switch(status) {
+		case SUCCESS:
+			return "";
+		case COULD_NOT_PARSE_SOLUTION:
+			return "<font color=red>BAD FORMAT</font>";
+		case DID_NOT_FINISH:
+			return "<font color=red>DID NOT FINISH</font>";
+		case ILLEGAL_MOVE:
+			return "<font color=red>CRASH</font>";
+		}
+		throw new IllegalArgumentException("Unexpected status: " + status);
 	}
 
 	private final int testNo;
@@ -226,9 +255,22 @@ public final class SingleTestPanel extends JPanel {
 							long time = (result.getStatus() == Status.SUCCESS) ? Math
 									.round(result.getTime().doubleValue() * 1000)
 									: 0;
-							DAO.saveTestResult(testNo, time, solution);
+							DAO.saveTestResult(testNo, result.getStatus(), time, solution);
 							updateHighScores();
-							resultString = "Success";
+							switch(result.getStatus()) {
+							case SUCCESS:
+								resultString = "<html><font color=green>Success!</font><br>Finished in <b>" + timeToLapTime(time) + "</b></html>";
+								break;
+							case COULD_NOT_PARSE_SOLUTION:
+								resultString = "<html>Could not parse solution<br>Check format of your solution.</html>";
+								break;
+							case DID_NOT_FINISH:
+								resultString = "<html>Looks like you forgot to cross the finish line!<br>Oh well, at least you didn't crash...</html>";
+								break;
+							case ILLEGAL_MOVE:
+								resultString = "<html>Crash!<br>Stay on track next time!</html>";
+								break;
+							}
 						} catch (ExecutionException ee) {
 							if (ee.getCause() instanceof ConnectException) {
 								resultString = "Could not connect to solution server";

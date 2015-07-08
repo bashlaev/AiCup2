@@ -3,7 +3,7 @@ package com.devoler.aicup2.solvers;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 
-public final class TrivialSolver extends CallableSolver {
+public final class DidNotFinishSolver extends CallableSolver {
 	@Override
 	public Callable<String> solverFor(final String task) {
 		return new Callable<String>() {
@@ -30,7 +30,7 @@ public final class TrivialSolver extends CallableSolver {
 						break;
 					}
 				}
-				return solution.toString();
+				return solution.toString().substring(0, solution.length() - 2);
 			}
 		};
 	}

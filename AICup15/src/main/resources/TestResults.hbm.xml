@@ -10,6 +10,7 @@
 			<generator class="native" />
 		</id>
 		<property name="testNo" type="long" not-null="true" index="testNoIndex" />
+		<property name="status" type="int" not-null="true" index="statusIndex" />
 		<property name="testTimestamp" type="timestamp" not-null="true" index="testTimestampIndex"/>
 		<property name="testResult" type="long" not-null="true" index="testResultIndex"/>
 		<property name="solution" type="text" not-null="true"/>
