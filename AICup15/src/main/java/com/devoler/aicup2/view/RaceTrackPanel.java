@@ -4,10 +4,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.BevelBorder;
 
 import com.devoler.aicup2.model.RaceResult;
@@ -33,6 +38,40 @@ public final class RaceTrackPanel extends JPanel {
 		trackImage = RaceTrackRenderer.renderTrack(raceTrack);
 		trackImageResized = resize(trackImage, SIZE);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				if (e.getClickCount() > 1) {
+					JDialog dialog = new JDialog((JFrame) getTopLevelAncestor(), "Zoomed", true);
+					JPanel zoomed = new JPanel(){
+						@Override
+						protected void paintComponent(Graphics g) {
+							super.paintComponent(g);
+							g.drawImage(trackImage,	0, 0, null);
+							synchronized (solutionMutex) {
+								if (solutionImage != null) {
+									g.drawImage(solutionImage,0, 0, null);
+								}
+							}
+						}
+						
+						public Dimension getPreferredSize() {
+							return new Dimension(trackImage.getWidth(),
+									trackImage.getHeight());
+						};
+						
+						public Dimension getMinimumSize() {
+							return getPreferredSize();
+						};
+					};
+					dialog.getContentPane().add(new JScrollPane(zoomed));
+					dialog.pack();
+					Utils.fullScreenWindow(dialog);
+					dialog.setVisible(true);
+				}
+			}
+		});
 	}
 
 	public RaceTrack getRaceTrack() {

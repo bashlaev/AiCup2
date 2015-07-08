@@ -59,6 +59,6 @@ public final class RemoteSolverAdapter {
 		});
 		server.setExecutor(Executors.newCachedThreadPool());
 		server.start();
-		System.out.println(name + ": started");
+		System.out.println(name + ": started at " + port);
 	}
 }

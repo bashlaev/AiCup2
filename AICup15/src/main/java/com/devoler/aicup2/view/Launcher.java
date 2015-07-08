@@ -38,7 +38,7 @@ public final class Launcher {
 			return;
 		}
 		final Solver solver = new RemoteSolver(url);
-		JFrame frame = new JFrame("Launcher");
+		JFrame frame = new JFrame("Racetrack tester");
 		JPanel allImages = new JPanel();
 		allImages.setLayout(new BoxLayout(allImages, BoxLayout.PAGE_AXIS));
 		allImages.add(Box.createVerticalStrut(10));
