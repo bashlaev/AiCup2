@@ -1,9 +1,11 @@
 package com.devoler.aicup2.view;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -23,30 +25,38 @@ import com.devoler.aicup2.model.TrackCell;
 
 public final class RaceTrackRenderer {
 	private static final int CELL_SIZE = 30;
-	
-	private static final Image trackImage = Toolkit.getDefaultToolkit().createImage(
-			RaceTrackRenderer.class.getResource("/img/30x30_asphalt.png"));
-	private static final Image nonTrackImage = Toolkit.getDefaultToolkit().createImage(
-			RaceTrackRenderer.class.getResource("/img/30x30_grass.png"));
-	private static final Image startLineImage = Toolkit.getDefaultToolkit().createImage(
-			RaceTrackRenderer.class.getResource("/img/start.png"));
-	private static final Image arrowU = Toolkit.getDefaultToolkit().createImage(
-			RaceTrackRenderer.class.getResource("/img/arrow.png"));
+
+	private static final Image trackImage = Toolkit.getDefaultToolkit()
+			.createImage(
+					RaceTrackRenderer.class
+							.getResource("/img/30x30_asphalt.png"));
+	private static final Image nonTrackImage = Toolkit
+			.getDefaultToolkit()
+			.createImage(
+					RaceTrackRenderer.class.getResource("/img/30x30_grass.png"));
+	private static final Image startLineImage = Toolkit.getDefaultToolkit()
+			.createImage(RaceTrackRenderer.class.getResource("/img/start.png"));
+	private static final Image arrowU = Toolkit.getDefaultToolkit()
+			.createImage(RaceTrackRenderer.class.getResource("/img/arrow.png"));
 	private static final Image arrowR, arrowD, arrowL;
 	private static final Image arcLU = Toolkit.getDefaultToolkit().createImage(
 			RaceTrackRenderer.class.getResource("/img/15x15_corner.png"));
 	private static final Image arcLD = Toolkit.getDefaultToolkit().createImage(
 			RaceTrackRenderer.class.getResource("/img/15x15_corner2.png"));
 	private static final Image arcRU, arcRD;
-	private static final Image stripeD = Toolkit.getDefaultToolkit().createImage(
-			RaceTrackRenderer.class.getResource("/img/15x15_hor.png"));
-	private static final Image stripeR = Toolkit.getDefaultToolkit().createImage(
-			RaceTrackRenderer.class.getResource("/img/15x15_vert.png"));
+	private static final Image stripeD = Toolkit.getDefaultToolkit()
+			.createImage(
+					RaceTrackRenderer.class.getResource("/img/15x15_hor.png"));
+	private static final Image stripeR = Toolkit.getDefaultToolkit()
+			.createImage(
+					RaceTrackRenderer.class.getResource("/img/15x15_vert.png"));
 	private static final Image stripeU, stripeL;
-	private static final Image cornerRD = Toolkit.getDefaultToolkit().createImage(
-			RaceTrackRenderer.class.getResource("/img/15x15_corner_small.png"));
+	private static final Image cornerRD = Toolkit.getDefaultToolkit()
+			.createImage(
+					RaceTrackRenderer.class
+							.getResource("/img/15x15_corner_small.png"));
 	private static final Image cornerLU, cornerLD, cornerRU;
-	
+
 	static {
 		MediaTracker mt = new MediaTracker(new JPanel());
 		int id = 0;
@@ -93,29 +103,32 @@ public final class RaceTrackRenderer {
 			throw new RuntimeException("Could not load resources");
 		}
 	}
-	
-	private static BufferedImage toBufferedImage(Image img){
-	    if (img instanceof BufferedImage) {
-	        return (BufferedImage) img;
-	    }
 
-	    // Create a buffered image with transparency
-	    BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+	private static BufferedImage toBufferedImage(Image img) {
+		if (img instanceof BufferedImage) {
+			return (BufferedImage) img;
+		}
 
-	    // Draw the image on to the buffered image
-	    Graphics2D bGr = bimage.createGraphics();
-	    bGr.drawImage(img, 0, 0, null);
-	    bGr.dispose();
+		// Create a buffered image with transparency
+		BufferedImage bimage = new BufferedImage(img.getWidth(null),
+				img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 
-	    // Return the buffered image
-	    return bimage;
+		// Draw the image on to the buffered image
+		Graphics2D bGr = bimage.createGraphics();
+		bGr.drawImage(img, 0, 0, null);
+		bGr.dispose();
+
+		// Return the buffered image
+		return bimage;
 	}
-	
+
 	private static Image rotate(BufferedImage source, int degrees) {
 		AffineTransform transform = new AffineTransform();
-	    transform.rotate(degrees * Math.PI / 180.0d, source.getWidth()/2.0, source.getHeight()/2.0);
-	    AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-	    return op.filter(source, null);
+		transform.rotate(degrees * Math.PI / 180.0d, source.getWidth() / 2.0,
+				source.getHeight() / 2.0);
+		AffineTransformOp op = new AffineTransformOp(transform,
+				AffineTransformOp.TYPE_BILINEAR);
+		return op.filter(source, null);
 	}
 
 	private RaceTrackRenderer() {
@@ -152,7 +165,7 @@ public final class RaceTrackRenderer {
 
 		return image;
 	}
-	
+
 	private static boolean isStartLine(TrackCell cell) {
 		return (cell == TrackCell.START_CELL) || (cell == TrackCell.START_LINE);
 	}
@@ -172,13 +185,17 @@ public final class RaceTrackRenderer {
 			renderCellTrack(g, x * CELL_SIZE, y * CELL_SIZE);
 			Image arrowImage;
 			if (isStartLine(track.safeCellAt(x - 1, y))) {
-				arrowImage = (cell == TrackCell.POST_START_LINE) ? arrowR: arrowL;
+				arrowImage = (cell == TrackCell.POST_START_LINE) ? arrowR
+						: arrowL;
 			} else if (isStartLine(track.safeCellAt(x + 1, y))) {
-				arrowImage = (cell == TrackCell.POST_START_LINE) ? arrowL: arrowR;
+				arrowImage = (cell == TrackCell.POST_START_LINE) ? arrowL
+						: arrowR;
 			} else if (isStartLine(track.safeCellAt(x, y - 1))) {
-				arrowImage = (cell == TrackCell.POST_START_LINE) ? arrowD: arrowU;
+				arrowImage = (cell == TrackCell.POST_START_LINE) ? arrowD
+						: arrowU;
 			} else {
-				arrowImage = (cell == TrackCell.POST_START_LINE) ? arrowU: arrowD;
+				arrowImage = (cell == TrackCell.POST_START_LINE) ? arrowU
+						: arrowD;
 			}
 			g.drawImage(arrowImage, x * CELL_SIZE, y * CELL_SIZE, null);
 			break;
@@ -206,7 +223,9 @@ public final class RaceTrackRenderer {
 		g.drawImage(trackImage, x, y, null);
 	}
 
-	private static void renderCellNonTrack(Graphics2D g, int x, int y, boolean LU, boolean U, boolean RU, boolean R, boolean RD, boolean D, boolean LD, boolean L) {
+	private static void renderCellNonTrack(Graphics2D g, int x, int y,
+			boolean LU, boolean U, boolean RU, boolean R, boolean RD,
+			boolean D, boolean LD, boolean L) {
 		// render LU
 		g.setClip(x, y, CELL_SIZE / 2, CELL_SIZE / 2);
 		if (!(L || LU || U)) {
@@ -225,7 +244,7 @@ public final class RaceTrackRenderer {
 			}
 			g.drawImage(fragment, x, y, null);
 		}
-		
+
 		// render RU
 		g.setClip(x + CELL_SIZE / 2, y, CELL_SIZE / 2, CELL_SIZE / 2);
 		if (!(R || RU || U)) {
@@ -244,7 +263,7 @@ public final class RaceTrackRenderer {
 			}
 			g.drawImage(fragment, x + CELL_SIZE / 2, y, null);
 		}
-		
+
 		// render LD
 		g.setClip(x, y + CELL_SIZE / 2, CELL_SIZE / 2, CELL_SIZE / 2);
 		if (!(L || LD || D)) {
@@ -263,9 +282,10 @@ public final class RaceTrackRenderer {
 			}
 			g.drawImage(fragment, x, y + CELL_SIZE / 2, null);
 		}
-		
+
 		// render RD
-		g.setClip(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE / 2, CELL_SIZE / 2);
+		g.setClip(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE / 2,
+				CELL_SIZE / 2);
 		if (!(R || RD || D)) {
 			g.drawImage(nonTrackImage, x, y, null);
 		} else {
@@ -293,6 +313,8 @@ public final class RaceTrackRenderer {
 		BufferedImage image = new BufferedImage(track.getWidth() * CELL_SIZE,
 				track.getHeight() * CELL_SIZE, BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics2D g = image.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 		List<Pair<Integer, Integer>> raceLog = result.getRaceLog();
 		// render moves
 		Set<Pair<Integer, Integer>> renderedEndpoints = new HashSet<>();
@@ -310,17 +332,41 @@ public final class RaceTrackRenderer {
 			boolean successfulMove = (result.getStatus() != Status.ILLEGAL_MOVE)
 					|| (i < raceLog.size() - 2);
 			g.setColor(new Color(successfulMove ? 0xff00ff00 : 0xffff0000, true));
-			g.drawLine(startPoint.getLeft() * CELL_SIZE + CELL_SIZE / 2,
-					startPoint.getRight() * CELL_SIZE + CELL_SIZE / 2,
-					endPoint.getLeft() * CELL_SIZE + CELL_SIZE / 2,
-					endPoint.getRight() * CELL_SIZE + CELL_SIZE / 2);
+			g.setStroke(new BasicStroke(3,BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
+			int x1 = startPoint.getLeft() * CELL_SIZE + CELL_SIZE / 2;
+			int y1 = startPoint.getRight() * CELL_SIZE + CELL_SIZE / 2;
+			int x2 = endPoint.getLeft() * CELL_SIZE + CELL_SIZE / 2;
+			int y2 = endPoint.getRight() * CELL_SIZE + CELL_SIZE / 2;
+			g.drawLine(x1, y1, x2, y2);
+			g.drawLine(x1 - 1, y1 - 1, x2 - 1, y2 - 1);
+			g.setStroke(new BasicStroke());
+			
+			//draw an arrow tip
+			int d = 10;
+			int h = 6;
+			int dx = x2 - x1, dy = y2 - y1;
+			double D = Math.sqrt(dx * dx + dy * dy);
+			double xm = D - d, xn = xm, ym = h, yn = -h, x;
+			double sin = dy / D, cos = dx / D;
+
+			x = xm * cos - ym * sin + x1;
+			ym = xm * sin + ym * cos + y1;
+			xm = x;
+
+			x = xn * cos - yn * sin + x1;
+			yn = xn * sin + yn * cos + y1;
+			xn = x;
+
+			int[] xpoints = { x2, (int) xm, (int) xn };
+			int[] ypoints = { y2, (int) ym, (int) yn };
+			g.fillPolygon(xpoints, ypoints, 3);
 		}
 		return image;
 	}
 
 	private static void renderEndPoint(Graphics2D g, int x, int y) {
-		g.setColor(new Color(0xff00ff00, true));
-		g.fillOval(x + CELL_SIZE / 2 - 3, y + CELL_SIZE / 2 - 3, 6, 6);
+//		g.setColor(new Color(0xff00ff00, true));
+//		g.fillOval(x + CELL_SIZE / 2 - 5, y + CELL_SIZE / 2 - 5, 10, 10);
 	}
 
 }
