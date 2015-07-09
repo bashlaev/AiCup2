@@ -28,6 +28,8 @@ jar {
         exclude "META-INF/*.DSA"
         exclude "META-INF/*.RSA"
     }
+    exclude('com/devoler/aicup2/contest')
+    exclude('com/devoler/aicup2/solvers')
 }
 
 dependencies {
