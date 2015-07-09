@@ -29,6 +29,7 @@ jar {
         exclude "META-INF/*.RSA"
     }
     exclude('com/devoler/aicup2/contest')
+    exclude('com/devoler/aicup2/trackeditor')
     exclude('com/devoler/aicup2/solvers')
 }
 

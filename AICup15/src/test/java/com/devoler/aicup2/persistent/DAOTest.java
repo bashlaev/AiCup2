@@ -11,7 +11,7 @@ import com.devoler.aicup2.model.RaceResult.Status;
 public class DAOTest {
 
 	@Test
-	public void test() {
+	public void testResults() {
 		DAO.saveTestResult(1, Status.SUCCESS, 100500, "s1");
 		DAO.saveTestResult(1, Status.SUCCESS, 100400, "s2");
 		DAO.saveTestResult(1, Status.SUCCESS, 100600, "s3");
@@ -32,4 +32,30 @@ public class DAOTest {
 		assertEquals(1, results2.size());
 		assertEquals(100, results2.get(0).getTestResult());
 	}
+	
+	@Test
+	public void submitResults() {
+		long time = System.currentTimeMillis();
+		DAO.submitResult("p1", "s11", "s12", "s13", time);
+		DAO.submitResult("p2", "s21", "s22", "s23", time + 1000);
+		DAO.submitResult("p3", "s31", "s32", "s33", time + 2000);
+		List<SubmitResults> results = DAO.getSubmitResults();
+		assertEquals(3, results.size());
+		assertEquals("p1", results.get(0).getName());
+		assertEquals("p2", results.get(1).getName());
+		assertEquals("p3", results.get(2).getName());
+		assertEquals("s11", results.get(0).getSolution1());
+		assertEquals("s21", results.get(1).getSolution1());
+		assertEquals("s31", results.get(2).getSolution1());
+		DAO.submitResult("p2", "s21+", "s22+", "s23+", time + 3000);
+		results = DAO.getSubmitResults();
+		assertEquals(3, results.size());
+		assertEquals("p1", results.get(0).getName());
+		assertEquals("p3", results.get(1).getName());
+		assertEquals("p2", results.get(2).getName());
+		assertEquals("s11", results.get(0).getSolution1());
+		assertEquals("s31", results.get(1).getSolution1());
+		assertEquals("s21+", results.get(2).getSolution1());
+	}
+
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.devoler.aicup2.persistent">
+
+	<class name="SubmitResults" table="SubmitResults">
+		<id name="id" type="long">
+			<generator class="native" />
+		</id>
+		<property name="name" type="string" not-null="true" length="50" index="submitNameIndex"/>
+		<property name="submitTime" type="timestamp" not-null="true" index="submitTimeIndex"/>
+		<property name="solution1" type="text" not-null="true"/>
+		<property name="solution2" type="text" not-null="true"/>
+		<property name="solution3" type="text" not-null="true"/>
+	</class>
+
+</hibernate-mapping>

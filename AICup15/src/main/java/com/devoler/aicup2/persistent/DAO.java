@@ -103,6 +103,36 @@ public final class DAO {
 		}
 	}
 
+	public static synchronized void submitResult(String name, String solution1,
+			String solution2, String solution3, long submitTime) {
+		try {
+			Session session = getSession();
+			beginTransaction();
+			try {
+				final SubmitResults results;
+				Object prev = session.createCriteria(SubmitResults.class)
+						.add(Restrictions.eq("name", name)).uniqueResult();
+				if (prev != null) {
+					results = (SubmitResults) prev;
+				} else {
+					results = new SubmitResults();
+					results.setName(name);
+				}
+				results.setSubmitTime(new Date(submitTime));
+				results.setSolution1(solution1);
+				results.setSolution2(solution2);
+				results.setSolution3(solution3);
+				session.save(results);
+				commitTransaction();
+			} catch (RuntimeException e) {
+				rollbackTransaction();
+				throw e;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	public static synchronized List<TestResults> getTestResults(long testNo,
 			int maxResults) {
@@ -128,4 +158,26 @@ public final class DAO {
 			return new ArrayList<>();
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	public static synchronized List<SubmitResults> getSubmitResults() {
+		try {
+			Session session = getSession();
+			beginTransaction();
+			try {
+				List<SubmitResults> results = (List<SubmitResults>) session
+						.createCriteria(SubmitResults.class)
+						.addOrder(Order.asc("submitTime")).list();
+				commitTransaction();
+				return results;
+			} catch (RuntimeException e) {
+				rollbackTransaction();
+				throw e;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ArrayList<>();
+		}
+	}
+
 }

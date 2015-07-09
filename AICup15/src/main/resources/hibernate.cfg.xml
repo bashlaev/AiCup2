@@ -33,6 +33,7 @@
 		<property name="hbm2ddl.auto">update</property>
 
 		<mapping resource="TestResults.hbm.xml" />
+		<mapping resource="SubmitResults.hbm.xml" />
 	</session-factory>
 
 </hibernate-configuration>
