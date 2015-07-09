@@ -55,28 +55,10 @@ public final class RaceTrackRenderer {
 							.getResource("/img/15x15_corner_small.png"));
 	private static final Image cornerLU, cornerLD, cornerRU;
 	private static final Image[] cars = new Image[20];
-	private static final int[] colors = new int[] {
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-		0xff0000,
-	};
+	private static final int[] colors = new int[] { 0x55ff0000, 0x55ff0000,
+			0x55ff0000, 0x55ff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000,
+			0xff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000,
+			0xff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000, };
 
 	static {
 		for (int i = 0; i < cars.length; i++) {
@@ -390,14 +372,12 @@ public final class RaceTrackRenderer {
 			List<List<Pair<Integer, Integer>>> raceLogs, int currentMove) {
 		for (int i = 0; i < raceLogs.size(); i++) {
 			List<Pair<Integer, Integer>> raceLog = raceLogs.get(i);
-			Pair<Integer, Integer> pos = track.getStartCell();
-			Color color = new Color(colors[i]);
-			Image car = cars[i];
-			for(int j = 1; j < Math.min(currentMove, raceLog.size()); j++) {
+			Color color = new Color(colors[i], true);
+			int lastPosIndex = Math.min(currentMove, raceLog.size() - 1);
+			for (int j = 1; j <= lastPosIndex; j++) {
 				// draw all moves with player's color
 				Pair<Integer, Integer> startPoint = raceLog.get(j - 1);
 				Pair<Integer, Integer> endPoint = raceLog.get(j);
-				pos = endPoint;
 				g.setColor(color);
 				g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND,
 						BasicStroke.JOIN_MITER));
@@ -429,12 +409,44 @@ public final class RaceTrackRenderer {
 				int[] ypoints = { y2, (int) ym, (int) yn };
 				g.fillPolygon(xpoints, ypoints, 3);
 			}
+		}		
+		for (int i = 0; i < raceLogs.size(); i++) {
+			List<Pair<Integer, Integer>> raceLog = raceLogs.get(i);
+			Image car = cars[i];
+			int lastPosIndex = Math.min(currentMove, raceLog.size() - 1);
+			// obtain current position
+			Pair<Integer, Integer> pos = track.getStartCell();
+			if (lastPosIndex < raceLog.size()) {
+				pos = raceLog.get(lastPosIndex);
+			}
+			// obtain speed from last move, or (if not possible) from the next move
+			Pair<Integer, Integer> speed = Pair.of(0, 0);
+			if (lastPosIndex < raceLog.size() && lastPosIndex > 0) {
+				Pair<Integer, Integer> endPoint = pos;
+				Pair<Integer, Integer> startPoint = raceLog.get(lastPosIndex - 1);
+				speed = Pair.of(endPoint.getLeft() - startPoint.getLeft(),
+					endPoint.getRight() - startPoint.getRight());
+			}
+			if ((speed.equals(Pair.of(0, 0))) && (lastPosIndex < raceLog.size() - 1)) {
+				Pair<Integer, Integer> endPoint = raceLog.get(lastPosIndex + 1);
+				Pair<Integer, Integer> startPoint = pos;
+				speed = Pair.of(endPoint.getLeft() - startPoint.getLeft(),
+					endPoint.getRight() - startPoint.getRight());
+			}
+
+			int carX = pos.getLeft() * CELL_SIZE + CELL_SIZE / 2;
+			int carY = pos.getRight() * CELL_SIZE + CELL_SIZE / 2;
+			double theta = (speed.equals(Pair.of(0, 0))) ? 0
+					: (Math.PI / 2 + Math.atan2(speed.getRight(),
+							speed.getLeft()));
+			g.rotate(theta, carX, carY);
 			g.drawImage(
 					car,
 					pos.getLeft() * CELL_SIZE + CELL_SIZE / 2
 							- car.getWidth(null) / 2, pos.getRight()
 							* CELL_SIZE + CELL_SIZE / 2 - car.getHeight(null)
 							/ 2, null);
+			g.rotate(-theta, carX, carY);
 		}
 	}
 

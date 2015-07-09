@@ -23,6 +23,7 @@ import com.devoler.aicup2.persistent.DAO;
 import com.devoler.aicup2.persistent.SubmitResults;
 import com.devoler.aicup2.view.RaceTrackRenderer;
 
+@SuppressWarnings("serial")
 public final class RacePanel extends JPanel {
 	private final RaceTrack raceTrack;
 	private final BufferedImage trackImage;
@@ -45,7 +46,6 @@ public final class RacePanel extends JPanel {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				System.out.println("Key pressed");
 				switch(e.getKeyCode()) {
 				case KeyEvent.VK_SPACE:
 					currentMove++;

@@ -5,3 +5,5 @@
 /.gradle
 /.settings
 /.DS_Store
+/aicup2/
+/derby.log
