@@ -55,10 +55,10 @@ public final class RaceTrackRenderer {
 							.getResource("/img/15x15_corner_small.png"));
 	private static final Image cornerLU, cornerLD, cornerRU;
 	private static final Image[] cars = new Image[20];
-	private static final int[] colors = new int[] { 0x55ff0000, 0x55ff0000,
-			0x55ff0000, 0x55ff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000,
-			0xff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000,
-			0xff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000, 0xff0000, };
+	private static final int[] colors = new int[] { 0x77ed1c24, 0x77ffc034,
+			0x7700b9ff, 0x77787c5f, 0x770071bc, 0x7776599a, 0x7781cebf, 0x77ba7581,
+			0x77e45b49, 0x77005e20, 0x777da367, 0x77293a14, 0x777b390e, 0x77ffcc00,
+			0x77e443ff, 0x77252525, 0x77959595, 0x778aa9d8, 0x775a707d, 0x77f5d79f };
 
 	static {
 		for (int i = 0; i < cars.length; i++) {

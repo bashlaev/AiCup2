@@ -6,7 +6,8 @@ public final class Solvers {
 
 	public static void main(String[] args) {
 		try {
-			new RemoteSolverAdapter("GoodSolver", new GoodSolver(), 8080);
+			new RemoteSolverAdapter("GoodSolver", new GoodSolver(), 8086);
+			new RemoteSolverAdapter("GoodSolverRandomized", new GoodSolverRandomized(), 8080);
 			new RemoteSolverAdapter("TrivialSolver", new TrivialSolver(), 8084);
 			new RemoteSolverAdapter("TrivialEnhancedSolver", new TrivialEnhancedSolver(), 8085);
 			new RemoteSolverAdapter("InvalidFormatSolver", new InvalidFormatSolver(), 8081);
