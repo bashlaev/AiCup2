@@ -5,6 +5,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.util.concurrent.TimeUnit;
 
 public final class Utils {
 	private Utils() {
@@ -38,6 +39,20 @@ public final class Utils {
 			window.setLocation(x, y);
 			window.setSize(new Dimension(w, h));
 		}
+	}
+
+	public static String timeToLapTime(long millis) {
+		String time = "";
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+		if (minutes > 0) {
+			time += minutes + ":";
+			millis -= TimeUnit.MINUTES.toMillis(minutes);
+		}
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+		time += String.format("%02d", seconds) + ".";
+		millis -= TimeUnit.SECONDS.toMillis(seconds);
+		time += String.format("%03d", millis);
+		return time;
 	}
 
 }

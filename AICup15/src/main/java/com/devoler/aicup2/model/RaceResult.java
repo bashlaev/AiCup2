@@ -9,7 +9,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class RaceResult {
 	public static RaceResult couldNotParseSolution() {
-		return new RaceResult(Status.COULD_NOT_PARSE_SOLUTION, null, 0);
+		return new RaceResult(Status.COULD_NOT_PARSE_SOLUTION,
+				new ArrayList<Pair<Integer, Integer>>(), 0);
 	}
 
 	private static RaceResult fail(List<Pair<Integer, Integer>> raceLog, Status status) {

@@ -136,7 +136,7 @@ public final class SingleTestPanel extends JPanel {
 					b.append(" - </html>");
 				} else {
 					TestResults r = contents.get(index);
-					String time = timeToLapTime(r.getTestResult());
+					String time = Utils.timeToLapTime(r.getTestResult());
 					String when = whenToString(r.getTestTimestamp().getTime());
 					RaceResult.Status status = Status.values()[r.getStatus()];
 					b.append(statusToString(status));
@@ -162,20 +162,6 @@ public final class SingleTestPanel extends JPanel {
 					+ " min. ago";
 		}
 		return "just now";
-	}
-	
-	private static String timeToLapTime(long millis) {
-		String time = "";
-		long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-		if (minutes > 0) {
-			time += minutes + ":";
-			millis -= TimeUnit.MINUTES.toMillis(minutes);
-		}
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-		time += String.format("%02d", seconds) + ".";
-		millis -= TimeUnit.SECONDS.toMillis(seconds);
-		time += String.format("%03d", millis);
-		return time;
 	}
 	
 	private static String statusToString(RaceResult.Status status) {
@@ -259,7 +245,7 @@ public final class SingleTestPanel extends JPanel {
 							updateHighScores();
 							switch(result.getStatus()) {
 							case SUCCESS:
-								resultString = "<html><font color=green>Success!</font><br>Finished in <b>" + timeToLapTime(time) + "</b></html>";
+								resultString = "<html><font color=green>Success!</font><br>Finished in <b>" + Utils.timeToLapTime(time) + "</b></html>";
 								break;
 							case COULD_NOT_PARSE_SOLUTION:
 								resultString = "<html>Could not parse solution<br>Check format of your solution.</html>";

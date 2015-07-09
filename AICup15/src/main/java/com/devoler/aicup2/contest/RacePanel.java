@@ -29,35 +29,52 @@ public final class RacePanel extends JPanel {
 	private final BufferedImage trackImage;
 	private final List<String> names = new ArrayList<>();
 	private final List<List<Pair<Integer, Integer>>> raceLogs = new ArrayList<>();
-	private int currentMove = 0;
+	private volatile int currentMove = 0;
+
+	private final LegendPanel legendPanel;
 
 	public RacePanel(final Races race) {
 		super();
 		raceTrack = race.getRaceTrack();
 		trackImage = RaceTrackRenderer.renderTrack(raceTrack);
 		List<SubmitResults> submitResults = DAO.getSubmitResults();
+		List<RaceResult> raceResults = new ArrayList<>();
 		for (SubmitResults submit : submitResults) {
 			names.add(submit.getName());
 			RaceResult result = SolutionChecker.checkSolution(raceTrack,
 					race.getSolution(submit));
 			raceLogs.add(result.getRaceLog());
+			raceResults.add(result);
 		}
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				switch(e.getKeyCode()) {
+				switch (e.getKeyCode()) {
 				case KeyEvent.VK_SPACE:
 					currentMove++;
+					updatePlayerTimes();
 					break;
 				case KeyEvent.VK_BACK_SPACE:
 				case KeyEvent.VK_DELETE:
 					currentMove = Math.max(0, currentMove - 1);
+					updatePlayerTimes();
 					break;
 				}
 				repaint();
 			}
 		});
+
+		legendPanel = new LegendPanel(names, raceResults);
+		updatePlayerTimes();
+	}
+	
+	private void updatePlayerTimes() {
+		legendPanel.setCurrentMove(currentMove);
+	}
+
+	public JPanel getLegendPanel() {
+		return legendPanel;
 	}
 
 	@Override
@@ -81,5 +98,9 @@ public final class RacePanel extends JPanel {
 	@Override
 	public Dimension getMinimumSize() {
 		return getPreferredSize();
+	}
+	
+	public void dispose() {
+		trackImage.flush();
 	}
 }

@@ -56,9 +56,10 @@ public final class RaceTrackRenderer {
 	private static final Image cornerLU, cornerLD, cornerRU;
 	private static final Image[] cars = new Image[20];
 	private static final int[] colors = new int[] { 0x77ed1c24, 0x77ffc034,
-			0x7700b9ff, 0x77787c5f, 0x770071bc, 0x7776599a, 0x7781cebf, 0x77ba7581,
-			0x77e45b49, 0x77005e20, 0x777da367, 0x77293a14, 0x777b390e, 0x77ffcc00,
-			0x77e443ff, 0x77252525, 0x77959595, 0x778aa9d8, 0x775a707d, 0x77f5d79f };
+			0x7700b9ff, 0x77787c5f, 0x770071bc, 0x7776599a, 0x7781cebf,
+			0x77ba7581, 0x77e45b49, 0x77005e20, 0x777da367, 0x77293a14,
+			0x777b390e, 0x77ffcc00, 0x77e443ff, 0x77252525, 0x77959595,
+			0x778aa9d8, 0x775a707d, 0x77f5d79f };
 
 	static {
 		for (int i = 0; i < cars.length; i++) {
@@ -370,11 +371,12 @@ public final class RaceTrackRenderer {
 
 	public static void renderRace(Graphics2D g, RaceTrack track,
 			List<List<Pair<Integer, Integer>>> raceLogs, int currentMove) {
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 		for (int i = 0; i < raceLogs.size(); i++) {
 			List<Pair<Integer, Integer>> raceLog = raceLogs.get(i);
 			Color color = new Color(colors[i], true);
-			int lastPosIndex = Math.min(currentMove, raceLog.size() - 1);
-			for (int j = 1; j <= lastPosIndex; j++) {
+			for (int j = 1; j <= Math.min(currentMove, raceLog.size() - 1); j++) {
 				// draw all moves with player's color
 				Pair<Integer, Integer> startPoint = raceLog.get(j - 1);
 				Pair<Integer, Integer> endPoint = raceLog.get(j);
@@ -409,29 +411,33 @@ public final class RaceTrackRenderer {
 				int[] ypoints = { y2, (int) ym, (int) yn };
 				g.fillPolygon(xpoints, ypoints, 3);
 			}
-		}		
+		}
 		for (int i = 0; i < raceLogs.size(); i++) {
 			List<Pair<Integer, Integer>> raceLog = raceLogs.get(i);
 			Image car = cars[i];
-			int lastPosIndex = Math.min(currentMove, raceLog.size() - 1);
+			int lastPosIndex = Math.max(0,
+					Math.min(currentMove, raceLog.size() - 1));
 			// obtain current position
 			Pair<Integer, Integer> pos = track.getStartCell();
 			if (lastPosIndex < raceLog.size()) {
 				pos = raceLog.get(lastPosIndex);
 			}
-			// obtain speed from last move, or (if not possible) from the next move
+			// obtain speed from last move, or (if not possible) from the next
+			// move
 			Pair<Integer, Integer> speed = Pair.of(0, 0);
 			if (lastPosIndex < raceLog.size() && lastPosIndex > 0) {
 				Pair<Integer, Integer> endPoint = pos;
-				Pair<Integer, Integer> startPoint = raceLog.get(lastPosIndex - 1);
+				Pair<Integer, Integer> startPoint = raceLog
+						.get(lastPosIndex - 1);
 				speed = Pair.of(endPoint.getLeft() - startPoint.getLeft(),
-					endPoint.getRight() - startPoint.getRight());
+						endPoint.getRight() - startPoint.getRight());
 			}
-			if ((speed.equals(Pair.of(0, 0))) && (lastPosIndex < raceLog.size() - 1)) {
+			if ((speed.equals(Pair.of(0, 0)))
+					&& (lastPosIndex < raceLog.size() - 1)) {
 				Pair<Integer, Integer> endPoint = raceLog.get(lastPosIndex + 1);
 				Pair<Integer, Integer> startPoint = pos;
 				speed = Pair.of(endPoint.getLeft() - startPoint.getLeft(),
-					endPoint.getRight() - startPoint.getRight());
+						endPoint.getRight() - startPoint.getRight());
 			}
 
 			int carX = pos.getLeft() * CELL_SIZE + CELL_SIZE / 2;
@@ -450,4 +456,11 @@ public final class RaceTrackRenderer {
 		}
 	}
 
+	public static Image getCarImage(int index) {
+		return cars[index];
+	}
+
+	public static int getColor(int index) {
+		return colors[index];
+	}
 }
