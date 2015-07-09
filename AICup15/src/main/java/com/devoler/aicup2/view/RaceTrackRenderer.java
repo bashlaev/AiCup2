@@ -10,9 +10,7 @@ import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -56,8 +54,37 @@ public final class RaceTrackRenderer {
 					RaceTrackRenderer.class
 							.getResource("/img/15x15_corner_small.png"));
 	private static final Image cornerLU, cornerLD, cornerRU;
+	private static final Image[] cars = new Image[20];
+	private static final int[] colors = new int[] {
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+		0xff0000,
+	};
 
 	static {
+		for (int i = 0; i < cars.length; i++) {
+			String filename = String.format("%02d", i + 1);
+			cars[i] = Toolkit.getDefaultToolkit().createImage(
+					RaceTrackRenderer.class.getResource("/img/" + filename
+							+ ".png"));
+		}
 		MediaTracker mt = new MediaTracker(new JPanel());
 		int id = 0;
 		mt.addImage(trackImage, id++);
@@ -69,6 +96,9 @@ public final class RaceTrackRenderer {
 		mt.addImage(stripeD, id++);
 		mt.addImage(stripeR, id++);
 		mt.addImage(cornerRD, id++);
+		for (int i = 0; i < cars.length; i++) {
+			mt.addImage(cars[i], id++);
+		}
 		try {
 			mt.waitForAll();
 		} catch (InterruptedException e) {
@@ -317,22 +347,14 @@ public final class RaceTrackRenderer {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		List<Pair<Integer, Integer>> raceLog = result.getRaceLog();
 		// render moves
-		Set<Pair<Integer, Integer>> renderedEndpoints = new HashSet<>();
 		for (int i = 0; i < raceLog.size() - 1; i++) {
 			Pair<Integer, Integer> startPoint = raceLog.get(i);
-			if (!renderedEndpoints.contains(startPoint)) {
-				renderEndPoint(g, startPoint.getLeft() * CELL_SIZE,
-						startPoint.getRight() * CELL_SIZE);
-			}
 			Pair<Integer, Integer> endPoint = raceLog.get(i + 1);
-			if (!renderedEndpoints.contains(endPoint)) {
-				renderEndPoint(g, endPoint.getLeft() * CELL_SIZE,
-						endPoint.getRight() * CELL_SIZE);
-			}
 			boolean successfulMove = (result.getStatus() != Status.ILLEGAL_MOVE)
 					|| (i < raceLog.size() - 2);
 			g.setColor(new Color(successfulMove ? 0xff00ff00 : 0xffff0000, true));
-			g.setStroke(new BasicStroke(3,BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
+			g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND,
+					BasicStroke.JOIN_MITER));
 			int x1 = startPoint.getLeft() * CELL_SIZE + CELL_SIZE / 2;
 			int y1 = startPoint.getRight() * CELL_SIZE + CELL_SIZE / 2;
 			int x2 = endPoint.getLeft() * CELL_SIZE + CELL_SIZE / 2;
@@ -340,8 +362,8 @@ public final class RaceTrackRenderer {
 			g.drawLine(x1, y1, x2, y2);
 			g.drawLine(x1 - 1, y1 - 1, x2 - 1, y2 - 1);
 			g.setStroke(new BasicStroke());
-			
-			//draw an arrow tip
+
+			// draw an arrow tip
 			int d = 10;
 			int h = 6;
 			int dx = x2 - x1, dy = y2 - y1;
@@ -364,9 +386,56 @@ public final class RaceTrackRenderer {
 		return image;
 	}
 
-	private static void renderEndPoint(Graphics2D g, int x, int y) {
-//		g.setColor(new Color(0xff00ff00, true));
-//		g.fillOval(x + CELL_SIZE / 2 - 5, y + CELL_SIZE / 2 - 5, 10, 10);
+	public static void renderRace(Graphics2D g, RaceTrack track,
+			List<List<Pair<Integer, Integer>>> raceLogs, int currentMove) {
+		for (int i = 0; i < raceLogs.size(); i++) {
+			List<Pair<Integer, Integer>> raceLog = raceLogs.get(i);
+			Pair<Integer, Integer> pos = track.getStartCell();
+			Color color = new Color(colors[i]);
+			Image car = cars[i];
+			for(int j = 1; j < Math.min(currentMove, raceLog.size()); j++) {
+				// draw all moves with player's color
+				Pair<Integer, Integer> startPoint = raceLog.get(j - 1);
+				Pair<Integer, Integer> endPoint = raceLog.get(j);
+				pos = endPoint;
+				g.setColor(color);
+				g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND,
+						BasicStroke.JOIN_MITER));
+				int x1 = startPoint.getLeft() * CELL_SIZE + CELL_SIZE / 2;
+				int y1 = startPoint.getRight() * CELL_SIZE + CELL_SIZE / 2;
+				int x2 = endPoint.getLeft() * CELL_SIZE + CELL_SIZE / 2;
+				int y2 = endPoint.getRight() * CELL_SIZE + CELL_SIZE / 2;
+				g.drawLine(x1, y1, x2, y2);
+				g.drawLine(x1 - 1, y1 - 1, x2 - 1, y2 - 1);
+				g.setStroke(new BasicStroke());
+
+				// draw an arrow tip
+				int d = 10;
+				int h = 6;
+				int dx = x2 - x1, dy = y2 - y1;
+				double D = Math.sqrt(dx * dx + dy * dy);
+				double xm = D - d, xn = xm, ym = h, yn = -h, x;
+				double sin = dy / D, cos = dx / D;
+
+				x = xm * cos - ym * sin + x1;
+				ym = xm * sin + ym * cos + y1;
+				xm = x;
+
+				x = xn * cos - yn * sin + x1;
+				yn = xn * sin + yn * cos + y1;
+				xn = x;
+
+				int[] xpoints = { x2, (int) xm, (int) xn };
+				int[] ypoints = { y2, (int) ym, (int) yn };
+				g.fillPolygon(xpoints, ypoints, 3);
+			}
+			g.drawImage(
+					car,
+					pos.getLeft() * CELL_SIZE + CELL_SIZE / 2
+							- car.getWidth(null) / 2, pos.getRight()
+							* CELL_SIZE + CELL_SIZE / 2 - car.getHeight(null)
+							/ 2, null);
+		}
 	}
 
 }
