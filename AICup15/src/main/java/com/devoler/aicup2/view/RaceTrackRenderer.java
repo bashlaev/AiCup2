@@ -10,7 +10,10 @@ import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
@@ -418,6 +421,7 @@ public final class RaceTrackRenderer {
 				g.fillPolygon(xpoints, ypoints, 3);
 			}
 		}
+		Map<Pair<Integer, Integer>, Integer> duplicateCars = new HashMap<>();
 		for (int i = 0; i < raceLogs.size(); i++) {
 			List<Pair<Integer, Integer>> raceLog = raceLogs.get(i);
 			Image car = bigCars[i];
@@ -445,6 +449,12 @@ public final class RaceTrackRenderer {
 				speed = Pair.of(endPoint.getLeft() - startPoint.getLeft(),
 						endPoint.getRight() - startPoint.getRight());
 			}
+			
+			Integer times = duplicateCars.get(pos);
+			if (times == null) {
+				times = 0;
+			}
+			duplicateCars.put(pos, times + 1);
 
 			int carX = pos.getLeft() * CELL_SIZE + CELL_SIZE / 2;
 			int carY = pos.getRight() * CELL_SIZE + CELL_SIZE / 2;
@@ -460,6 +470,20 @@ public final class RaceTrackRenderer {
 							/ 2, null);
 			g.rotate(-theta, carX, carY);
 		}
+		
+		// filter duplicateCars
+		for(Iterator<Pair<Integer, Integer>> i = duplicateCars.keySet().iterator(); i.hasNext(); ) {
+			if (duplicateCars.get(i.next()).intValue() == 1) {
+				i.remove();
+			}
+		}
+		
+		for(Pair<Integer, Integer> pos: duplicateCars.keySet()) {
+			int times = duplicateCars.get(pos);
+			g.setColor(Color.white);
+			g.drawString("x" + times, pos.getLeft() * CELL_SIZE + 2 * CELL_SIZE / 3, pos.getRight() * CELL_SIZE + CELL_SIZE / 2);
+		}
+		
 	}
 
 	public static Image getCarImage(int index) {
