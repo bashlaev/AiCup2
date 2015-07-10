@@ -19,12 +19,21 @@ public final class RaceRunner {
 		frame.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if ((currentRace < panels.length - 1) && (e.getKeyCode() == KeyEvent.VK_ENTER)) {
-					panels[currentRace].dispose();
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if (currentRace < panels.length) {
+						panels[currentRace].getLegendPanel().addPoints();
+					}
+					if (currentRace < panels.length - 1) {
+						panels[currentRace].dispose();
+					}
 					currentRace++;
-					showCurrentRace(frame);
+					if (currentRace < panels.length) {
+						showCurrentRace(frame);
+					}
 				}
-				panels[currentRace].dispatchEvent(e);
+				if (currentRace < panels.length) {
+					panels[currentRace].dispatchEvent(e);
+				}
 			}
 		});
 		frame.getContentPane().setLayout(
@@ -39,6 +48,7 @@ public final class RaceRunner {
 		frame.getContentPane().removeAll();
 		frame.getContentPane().add(new JScrollPane(panels[currentRace]));
 		frame.getContentPane().add(panels[currentRace].getLegendPanel());
+		panels[currentRace].getLegendPanel().setCurrentMove(0);
 		frame.pack();
 		Utils.fullScreenWindow(frame);
 		frame.setVisible(true);

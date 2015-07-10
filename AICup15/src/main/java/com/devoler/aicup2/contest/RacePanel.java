@@ -73,7 +73,7 @@ public final class RacePanel extends JPanel {
 		legendPanel.setCurrentMove(currentMove);
 	}
 
-	public JPanel getLegendPanel() {
+	public LegendPanel getLegendPanel() {
 		return legendPanel;
 	}
 
