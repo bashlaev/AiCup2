@@ -64,6 +64,7 @@ public final class RemoteSolver implements Solver {
 				}
 				buffer.flush();
 			}
+			System.out.println(new String(buffer.toByteArray()));
 			return new String(buffer.toByteArray());
 		}
 	}

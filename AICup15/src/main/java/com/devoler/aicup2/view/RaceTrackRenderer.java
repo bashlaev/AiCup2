@@ -55,6 +55,7 @@ public final class RaceTrackRenderer {
 							.getResource("/img/15x15_corner_small.png"));
 	private static final Image cornerLU, cornerLD, cornerRU;
 	private static final Image[] cars = new Image[20];
+	private static final Image[] bigCars = new Image[20];
 	private static final int[] colors = new int[] { 0x77ed1c24, 0x77ffc034,
 			0x7700b9ff, 0x77787c5f, 0x770071bc, 0x7776599a, 0x7781cebf,
 			0x77ba7581, 0x77e45b49, 0x77005e20, 0x777da367, 0x77293a14,
@@ -66,6 +67,10 @@ public final class RaceTrackRenderer {
 			String filename = String.format("%02d", i + 1);
 			cars[i] = Toolkit.getDefaultToolkit().createImage(
 					RaceTrackRenderer.class.getResource("/img/" + filename
+							+ ".png"));
+			String bigFilename = String.format("%03d", i + 1);
+			bigCars[i] = Toolkit.getDefaultToolkit().createImage(
+					RaceTrackRenderer.class.getResource("/img/" + bigFilename
 							+ ".png"));
 		}
 		MediaTracker mt = new MediaTracker(new JPanel());
@@ -81,6 +86,7 @@ public final class RaceTrackRenderer {
 		mt.addImage(cornerRD, id++);
 		for (int i = 0; i < cars.length; i++) {
 			mt.addImage(cars[i], id++);
+			mt.addImage(bigCars[i], id++);
 		}
 		try {
 			mt.waitForAll();
@@ -414,7 +420,7 @@ public final class RaceTrackRenderer {
 		}
 		for (int i = 0; i < raceLogs.size(); i++) {
 			List<Pair<Integer, Integer>> raceLog = raceLogs.get(i);
-			Image car = cars[i];
+			Image car = bigCars[i];
 			int lastPosIndex = Math.max(0,
 					Math.min(currentMove, raceLog.size() - 1));
 			// obtain current position
