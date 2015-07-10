@@ -30,6 +30,7 @@ public final class RacePanel extends JPanel {
 	private final List<String> names = new ArrayList<>();
 	private final List<List<Pair<Integer, Integer>>> raceLogs = new ArrayList<>();
 	private volatile int currentMove = 0;
+	private volatile int scale = 8;
 
 	private final LegendPanel legendPanel;
 
@@ -60,6 +61,16 @@ public final class RacePanel extends JPanel {
 					currentMove = Math.max(0, currentMove - 1);
 					updatePlayerTimes();
 					break;
+				case KeyEvent.VK_Q:
+					if (scale < 8) {
+						scale *= 2;
+					}
+					break;
+				case KeyEvent.VK_A:
+					if (scale > 1) {
+						scale /= 2;
+					}
+					break;
 				}
 				repaint();
 			}
@@ -80,6 +91,9 @@ public final class RacePanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		if (scale != 8) {
+			((Graphics2D) g).scale(scale / 8.0, scale / 8.0);
+		}
 		g.drawImage(trackImage, 0, 0, null);
 		RaceTrackRenderer.renderRace((Graphics2D) g, raceTrack, raceLogs,
 				currentMove);
